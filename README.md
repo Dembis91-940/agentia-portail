@@ -122,6 +122,13 @@ risque de casser le site et donne un cycle de vie propre au produit).
 - Capture dashboard (pour la vente) : `screenshots/dashboard-v6.png`
 - Capture ProdIA (pour la vente) : `screenshots/evolution-score.png`
 
+> ⚠️ **GitHub Pages = démo statique, PAS le portail.** Le frontend est servi par GH Pages,
+> mais **le backend FastAPI n'y tourne pas** → login/API en échec. Un bandeau
+> « Démo statique » s'affiche automatiquement quand `/api/health` ne répond pas
+> (détection au chargement, invisible en local). Ne partagez jamais l'URL GH Pages
+> comme démo fonctionnelle : la vraie démo tourne en local (`127.0.0.1:8000`),
+> et le déploiement prod (Railway/Render) attend la validation utilisateur.
+
 ---
 
 ## ProdIA — suivi mensuel du score / gains / ROI (module `audits`)
