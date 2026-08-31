@@ -179,6 +179,59 @@ class AuditSnapshot(Base):
     formule = Column(String, default="")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
+# ---------------------------------------------------------------------------
+# AvisBoost — module avis : emplacements, visites, relances J+2/J+5/J+9, avis
+# ---------------------------------------------------------------------------
+class Location(Base):
+    """Emplacement (commerce) AvisBoost — offre Pro = 2 emplacements."""
+    __tablename__ = "locations"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    name = Column(String, nullable=False)
+    address = Column(String, default="")
+    google_place_id = Column(String, default="")
+    qr_url = Column(String, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class Visit(Base):
+    """Visite client — déclenche les relances automatiques J+2 / J+5 / J+9."""
+    __tablename__ = "visits"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
+    client_name = Column(String, nullable=False)
+    phone = Column(String, default="")
+    visit_date = Column(Date, default=date.today)
+    canal = Column(String, default="google")   # google | qr | bouche_a_oreille | autre
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class Reminder(Base):
+    """Relance planifiée (J+2 / J+5 / J+9) après une visite, SMS ou WhatsApp."""
+    __tablename__ = "reminders"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    visit_id = Column(Integer, ForeignKey("visits.id"))
+    canal = Column(String, default="whatsapp")             # sms | whatsapp
+    jour_offset = Column(Integer, default=2)               # 2 | 5 | 9
+    date_prevue = Column(Date, index=True)
+    statut = Column(String, default="planifiee")           # planifiee | envoyee | echouee | annulee
+    envoyee_le = Column(DateTime, nullable=True)
+    log = Column(Text, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+class Review(Base):
+    """Avis client (Google ou direct) — note 1-5, réponse éventuelle."""
+    __tablename__ = "reviews"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    location_id = Column(Integer, ForeignKey("locations.id"), nullable=True)
+    note = Column(Integer, default=5)
+    text = Column(Text, default="")
+    date = Column(Date, default=date.today, index=True)
+    repondu_le = Column(DateTime, nullable=True)
+    reponse = Column(Text, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 Base.metadata.create_all(engine)
 
 # ---------------------------------------------------------------------------
@@ -341,11 +394,127 @@ def _seed_prodia(db: Session):
                          formule="Pro"))
     db.commit()
 
+AVISBOOST_COLOR = "#22d3ee"
+AVISBOOST_DEMO_EMAIL = "claire@salon-lumiere.fr"
+AVISBOOST_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD", "client1234")
+AVISBOOST_DEMO_FULL_NAME = "Claire Martin"
+AVISBOOST_DEMO_COMPANY = "Salon Lumière"
+
+def _plan_relances(db: Session, user_id: int, visit_id: int, visit_date: date,
+                   canal: str = "whatsapp", marquer_envoyees: bool = False):
+    """Crée les 3 relances J+2 / J+5 / J+9 d'une visite (idempotent par visite).
+
+    marquer_envoyees=True (seed démo UNIQUEMENT) : les relances dont la date
+    prévue est STRICTEMENT passée sont marquées « envoyee » avec un log seed.
+    En usage réel (False), une relance passée reste « planifiee » → elle apparaît
+    dans /reminders/due et part via le process (mode test journalisé ou réel)."""
+    existing = db.query(Reminder).filter(Reminder.visit_id == visit_id).count()
+    if existing:
+        return []
+    created = []
+    today = date.today()
+    for offset in (2, 5, 9):
+        date_prevue = visit_date + timedelta(days=offset)
+        r = Reminder(user_id=user_id, visit_id=visit_id, canal=canal, jour_offset=offset,
+                     date_prevue=date_prevue, statut="planifiee")
+        db.add(r)
+        db.flush()
+        if marquer_envoyees and date_prevue < today:
+            r.statut = "envoyee"
+            r.envoyee_le = datetime.now(timezone.utc)
+            r.log = (f"[seed démo] relance J+{offset} envoyée en mode test le "
+                     f"{date_prevue.isoformat()} — aucun envoi réel (credentials absents)")
+        created.append(r)
+    db.commit()
+    return created
+
+def _seed_avisboost(db: Session):
+    """Business AvisBoost (avis, cyan lagune #22d3ee) + client démo Salon Lumière
+    avec emplacements, visites, relances planifiées/émises et avis réels datés
+    (la courbe avis/mois et le taux de réponse sont calculés depuis la base).
+    Idempotent : business par slug, user par email, données seulement si absentes."""
+    biz = db.query(Business).filter(Business.slug == "avisboost").first()
+    if not biz:
+        biz = Business(slug="avisboost", name="AvisBoost", color=AVISBOOST_COLOR,
+                       modules="avis,invoices",
+                       description="Avis Google pour commerces de proximité — relances SMS/WhatsApp, réponses IA, suivi des avis.")
+        db.add(biz)
+        db.commit()
+    if os.environ.get("PORTAIL_SEED_DEMO", "1") != "1":
+        return
+    user = db.query(User).filter(User.email == AVISBOOST_DEMO_EMAIL).first()
+    if not user:
+        user = User(email=AVISBOOST_DEMO_EMAIL, hashed_password=password_hash.hash(AVISBOOST_DEMO_PASSWORD),
+                    full_name=AVISBOOST_DEMO_FULL_NAME, company=AVISBOOST_DEMO_COMPANY, business_id=biz.id)
+        db.add(user)
+        db.flush()
+        db.commit()
+    profil = db.query(ClientProfile).filter(ClientProfile.user_id == user.id).first()
+    if not profil:
+        db.add(ClientProfile(user_id=user.id, statut="abonne", plan="Pro", montant_mensuel=49.0))
+        db.commit()
+    elif profil.plan != "Pro":
+        profil.statut, profil.plan, profil.montant_mensuel = "abonne", "Pro", 49.0
+        db.commit()
+
+    if db.query(Location).filter(Location.user_id == user.id).first():
+        return  # données AvisBoost déjà seedées
+
+    # 2 emplacements (offre Pro = 2) — QR = vrai lien Google (recherche nom + ville)
+    loc1 = Location(user_id=user.id, name="Salon Lumière — Lyon 2e",
+                    address="12 rue de la République, 69002 Lyon",
+                    google_place_id="",
+                    qr_url="https://www.google.com/search?q=Salon+Lumi%C3%A8re+Lyon")
+    loc2 = Location(user_id=user.id, name="Salon Lumière — Villeurbanne",
+                    address="8 cours Émile Zola, 69100 Villeurbanne",
+                    google_place_id="",
+                    qr_url="https://www.google.com/search?q=Salon+Lumi%C3%A8re+Villeurbanne")
+    db.add_all([loc1, loc2])
+    db.flush()
+
+    today = date.today()
+    visits = [
+        # (location, client, phone, date_visite, canal)
+        (loc1, "Julie Bernard", "+33612345678", today - timedelta(days=9), "google"),
+        (loc1, "Karim Haddad", "+33623456789", today - timedelta(days=5), "qr"),
+        (loc2, "Léa Moreau",   "+33634567890", today - timedelta(days=2), "bouche_a_oreille"),
+        (loc1, "Nadia Benali", "+33645678901", today - timedelta(days=40), "google"),
+    ]
+    for loc, name, phone, vdate, canal in visits:
+        v = Visit(user_id=user.id, location_id=loc.id, client_name=name, phone=phone,
+                  visit_date=vdate, canal=canal)
+        db.add(v)
+        db.flush()
+        _plan_relances(db, user.id, v.id, vdate, canal=canal, marquer_envoyees=True)
+
+    # Avis réels datés sur 3 mois (courbe avis/mois + taux de réponse réels)
+    reviews = [
+        (loc1, 5, "Superbe coupe, accueil très chaleureux !", today - timedelta(days=77), True,
+         "Merci beaucoup pour ce retour, toute l'équipe est ravie ! À très vite."),
+        (loc1, 4, "Très bon rapport qualité-prix, je recommande.", today - timedelta(days=64), True,
+         "Merci pour votre confiance ! Au plaisir de vous revoir."),
+        (loc1, 5, "Équipe à l'écoute, résultat impeccable.", today - timedelta(days=50), True,
+         "Merci infiniment, c'est un plaisir de vous recevoir !"),
+        (loc2, 3, "Bien mais un peu d'attente malgré le rendez-vous.", today - timedelta(days=37), False, ""),
+        (loc1, 5, "Meilleur salon de Lyon, je reviens chaque mois !", today - timedelta(days=21), True,
+         "Quel plaisir de vous lire ! Merci pour votre fidélité 💛"),
+        (loc2, 4, "Très satisfaite de ma coloration.", today - timedelta(days=11), False, ""),
+        (loc1, 5, "Accueil parfait et résultat au top !", today - timedelta(days=2), False, ""),
+    ]
+    for loc, note, text, rdate, repondu, reponse in reviews:
+        rv = Review(user_id=user.id, location_id=loc.id, note=note, text=text, date=rdate,
+                    reponse=reponse or "")
+        if repondu:
+            rv.repondu_le = datetime.now(timezone.utc)
+        db.add(rv)
+    db.commit()
+
 def seed_if_needed():
     db = SessionLocal()
     try:
         _seed_demo(db)
         _seed_prodia(db)
+        _seed_avisboost(db)
     finally:
         db.close()
 
@@ -433,6 +602,7 @@ class DashboardOut(BaseModel):
     charts: dict
     audits: list = []
     audits_history: dict = {}
+    avisboost: dict = {}
 
 class AuditIn(BaseModel):
     site_name: str = "Site principal"
@@ -456,6 +626,32 @@ class AuditOut(BaseModel):
     roi: Optional[float]
     plan_action: dict
     formule: str
+
+# --- AvisBoost ---
+class LocationIn(BaseModel):
+    name: str
+    address: str = ""
+    google_place_id: str = ""
+    qr_url: str = ""
+
+class VisitIn(BaseModel):
+    location_id: Optional[int] = None
+    client_name: str
+    phone: str = ""
+    visit_date: Optional[str] = None      # YYYY-MM-DD (défaut : aujourd'hui)
+    canal: str = "google"
+
+class ReviewIn(BaseModel):
+    location_id: Optional[int] = None
+    note: int = 5
+    text: str = ""
+    date: Optional[str] = None            # YYYY-MM-DD (défaut : aujourd'hui)
+
+class RespondIn(BaseModel):
+    reponse: str
+
+class ProcessIn(BaseModel):
+    ids: Optional[list] = None
 
 # ---------------------------------------------------------------------------
 # App
@@ -622,6 +818,7 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
     has_automations = "automations" in modules
     has_packs = "packs" in modules
     has_audits = "audits" in modules
+    has_avis = "avis" in modules
 
     total_heures = sum(a.heures_gagnees or 0 for a in automations) + (profil.temps_recupere_heures or 0 if profil else 0)
     live_count = sum(1 for a in automations if a.statut == "active")
@@ -646,6 +843,8 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
                   .order_by(AuditSnapshot.date.desc(), AuditSnapshot.id.desc()).all()]
         audits_history = _audits_history(user.id, db)
 
+    avisboost = _build_avisboost(user.id, db) if has_avis else {}
+
     return DashboardOut(
         user=UserOut(id=user.id, email=user.email, full_name=user.full_name, company=user.company, is_admin=user.is_admin, business=business.slug if business else ""),
         business={"slug": business.slug, "name": business.name, "color": business.color, "modules": modules,
@@ -664,6 +863,7 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
         charts=charts,
         audits=audits,
         audits_history=audits_history,
+        avisboost=avisboost,
     )
 
 @app.post("/api/packs/{pack_id}/buy")
@@ -764,6 +964,318 @@ def audits_history(user: User = Depends(get_current_user), db: Session = Depends
                    site: Optional[str] = None):
     """Séries temporelles pour les graphiques Évolution (score, gains €, ROI)."""
     return _audits_history(user.id, db, site_name=site)
+
+# ---------------------------------------------------------------------------
+# AvisBoost — module avis : emplacements, visites, relances J+2/J+5/J+9, avis
+# ---------------------------------------------------------------------------
+def _guard_module_avis(user: User, db: Session) -> Business:
+    """403 si le business du client n'a pas le module avis (isolations entre business)."""
+    business = db.query(Business).filter(Business.id == user.business_id).first()
+    modules = (business.modules or "").split(",") if business else []
+    if "avis" not in modules:
+        raise HTTPException(403, "Votre espace ne dispose pas du module avis")
+    return business
+
+def _location_to_dict(l: Location) -> dict:
+    return {"id": l.id, "name": l.name, "address": l.address or "",
+            "google_place_id": l.google_place_id or "", "qr_url": l.qr_url or ""}
+
+def _visit_to_dict(v: Visit) -> dict:
+    return {"id": v.id, "location_id": v.location_id, "client_name": v.client_name,
+            "phone": v.phone or "", "visit_date": v.visit_date.isoformat() if v.visit_date else "",
+            "canal": v.canal or "google"}
+
+def _reminder_to_dict(r: Reminder) -> dict:
+    return {"id": r.id, "visit_id": r.visit_id, "canal": r.canal or "whatsapp",
+            "jour_offset": r.jour_offset or 0,
+            "date_prevue": r.date_prevue.isoformat() if r.date_prevue else "",
+            "statut": r.statut or "planifiee",
+            "envoyee_le": r.envoyee_le.isoformat() if r.envoyee_le else None,
+            "log": r.log or ""}
+
+def _review_to_dict(rv: Review) -> dict:
+    return {"id": rv.id, "location_id": rv.location_id, "note": rv.note or 5,
+            "text": rv.text or "", "date": rv.date.isoformat() if rv.date else "",
+            "repondu_le": rv.repondu_le.isoformat() if rv.repondu_le else None,
+            "reponse": rv.reponse or ""}
+
+def _first_of_month(d: date, months_ago: int = 0) -> date:
+    total = d.year * 12 + (d.month - 1) - months_ago
+    y, m0 = divmod(total, 12)
+    return date(y, m0 + 1, 1)
+
+def _avis_stats(user_id: int, db: Session) -> dict:
+    """Statistiques AvisBoost — 100% calculées depuis la base (zéro simulateur)."""
+    reviews = db.query(Review).filter(Review.user_id == user_id).all()
+    total = len(reviews)
+    repondus = sum(1 for r in reviews if r.repondu_le)
+    taux = round(repondus / total * 100, 1) if total else 0.0
+    note_moy = round(sum((r.note or 0) for r in reviews) / total, 1) if total else 0.0
+    today = date.today()
+    avis_par_mois = []
+    for i in range(5, -1, -1):
+        start = _first_of_month(today, i)
+        end = _first_of_month(today, i - 1)
+        count = sum(1 for r in reviews if start <= (r.date or today) < end)
+        avis_par_mois.append({"mois": f"{start.month:02d}/{start.year}", "count": count})
+    reminders = db.query(Reminder).filter(Reminder.user_id == user_id).all()
+    by_status = {"planifiee": 0, "envoyee": 0, "echouee": 0, "annulee": 0}
+    for r in reminders:
+        s = r.statut if r.statut in by_status else "planifiee"
+        by_status[s] += 1
+    due = sum(1 for r in reminders if r.statut == "planifiee" and r.date_prevue and r.date_prevue <= today)
+    return {
+        "avis_total": total,
+        "avis_repondus": repondus,
+        "avis_en_attente": total - repondus,
+        "taux_reponse": taux,
+        "note_moyenne": note_moy,
+        "avis_par_mois": avis_par_mois,
+        "relances": by_status,
+        "relances_due": due,
+        "emplacements": db.query(Location).filter(Location.user_id == user_id).count(),
+        "visites": db.query(Visit).filter(Visit.user_id == user_id).count(),
+    }
+
+def _build_avisboost(user_id: int, db: Session) -> dict:
+    """Payload complet du module avis pour le dashboard."""
+    return {
+        "locations": [_location_to_dict(l) for l in db.query(Location)
+                      .filter(Location.user_id == user_id).order_by(Location.id).all()],
+        "visits": [_visit_to_dict(v) for v in db.query(Visit)
+                   .filter(Visit.user_id == user_id)
+                   .order_by(Visit.visit_date.desc(), Visit.id.desc()).all()],
+        "reminders": [_reminder_to_dict(r) for r in db.query(Reminder)
+                      .filter(Reminder.user_id == user_id)
+                      .order_by(Reminder.date_prevue, Reminder.id).all()],
+        "reviews": [_review_to_dict(rv) for rv in db.query(Review)
+                    .filter(Review.user_id == user_id)
+                    .order_by(Review.date.desc(), Review.id.desc()).all()],
+        "stats": _avis_stats(user_id, db),
+    }
+
+# --- Emplacements ---
+@app.get("/api/avisboost/locations", response_model=list)
+def list_locations(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    return [_location_to_dict(l) for l in db.query(Location)
+            .filter(Location.user_id == user.id).order_by(Location.id).all()]
+
+@app.post("/api/avisboost/locations", response_model=dict, status_code=201)
+def create_location(data: LocationIn, user: User = Depends(get_current_user),
+                    db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    if not data.name.strip():
+        raise HTTPException(422, "Le nom de l'emplacement est requis")
+    loc = Location(user_id=user.id, name=data.name.strip(), address=data.address.strip(),
+                   google_place_id=data.google_place_id.strip(), qr_url=data.qr_url.strip())
+    db.add(loc)
+    db.commit()
+    db.refresh(loc)
+    return _location_to_dict(loc)
+
+@app.delete("/api/avisboost/locations/{location_id}", response_model=dict)
+def delete_location(location_id: int, user: User = Depends(get_current_user),
+                    db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    loc = db.query(Location).filter(Location.id == location_id, Location.user_id == user.id).first()
+    if not loc:
+        raise HTTPException(404, "Emplacement introuvable")
+    db.delete(loc)
+    db.commit()
+    return {"ok": True}
+
+# --- Visites (création → planifie J+2/J+5/J+9 automatiquement) ---
+@app.get("/api/avisboost/visits", response_model=list)
+def list_visits(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    return [_visit_to_dict(v) for v in db.query(Visit)
+            .filter(Visit.user_id == user.id)
+            .order_by(Visit.visit_date.desc(), Visit.id.desc()).all()]
+
+@app.post("/api/avisboost/visits", response_model=dict, status_code=201)
+def create_visit(data: VisitIn, user: User = Depends(get_current_user),
+                 db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    if not data.client_name.strip():
+        raise HTTPException(422, "Le nom du client est requis")
+    try:
+        vdate = date.fromisoformat(data.visit_date) if data.visit_date else date.today()
+    except ValueError:
+        raise HTTPException(422, "Date invalide (format attendu : YYYY-MM-DD)")
+    visit = Visit(user_id=user.id, location_id=data.location_id,
+                  client_name=data.client_name.strip(), phone=data.phone.strip(),
+                  visit_date=vdate, canal=(data.canal or "google").strip() or "google")
+    db.add(visit)
+    db.commit()
+    db.refresh(visit)
+    _plan_relances(db, user.id, visit.id, vdate, canal="whatsapp")
+    return _visit_to_dict(visit)
+
+@app.delete("/api/avisboost/visits/{visit_id}", response_model=dict)
+def delete_visit(visit_id: int, user: User = Depends(get_current_user),
+                 db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    visit = db.query(Visit).filter(Visit.id == visit_id, Visit.user_id == user.id).first()
+    if not visit:
+        raise HTTPException(404, "Visite introuvable")
+    db.query(Reminder).filter(Reminder.visit_id == visit.id).delete()
+    db.delete(visit)
+    db.commit()
+    return {"ok": True}
+
+# --- Avis ---
+@app.get("/api/avisboost/reviews", response_model=list)
+def list_reviews(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    return [_review_to_dict(rv) for rv in db.query(Review)
+            .filter(Review.user_id == user.id)
+            .order_by(Review.date.desc(), Review.id.desc()).all()]
+
+@app.post("/api/avisboost/reviews", response_model=dict, status_code=201)
+def create_review(data: ReviewIn, user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    try:
+        rdate = date.fromisoformat(data.date) if data.date else date.today()
+    except ValueError:
+        raise HTTPException(422, "Date invalide (format attendu : YYYY-MM-DD)")
+    rv = Review(user_id=user.id, location_id=data.location_id,
+                note=max(1, min(5, int(data.note))), text=data.text.strip(), date=rdate)
+    db.add(rv)
+    db.commit()
+    db.refresh(rv)
+    return _review_to_dict(rv)
+
+@app.delete("/api/avisboost/reviews/{review_id}", response_model=dict)
+def delete_review(review_id: int, user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    _guard_module_avis(user, db)
+    rv = db.query(Review).filter(Review.id == review_id, Review.user_id == user.id).first()
+    if not rv:
+        raise HTTPException(404, "Avis introuvable")
+    db.delete(rv)
+    db.commit()
+    return {"ok": True}
+
+@app.post("/api/avisboost/reviews/{review_id}/respond", response_model=dict)
+def respond_review(review_id: int, data: RespondIn, user: User = Depends(get_current_user),
+                   db: Session = Depends(get_db)):
+    """Marque un avis comme répondu (réponse humaine ou IA validée). Données réelles."""
+    _guard_module_avis(user, db)
+    rv = db.query(Review).filter(Review.id == review_id, Review.user_id == user.id).first()
+    if not rv:
+        raise HTTPException(404, "Avis introuvable")
+    if not data.reponse.strip():
+        raise HTTPException(422, "La réponse ne peut pas être vide")
+    rv.reponse = data.reponse.strip()
+    rv.repondu_le = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(rv)
+    return _review_to_dict(rv)
+
+@app.post("/api/avisboost/reviews/{review_id}/suggest-reply", response_model=dict)
+def suggest_reply(review_id: int, user: User = Depends(get_current_user),
+                  db: Session = Depends(get_db)):
+    """Suggère une réponse : LLM réel si LLM_API_KEY, sinon template local (version de base)."""
+    _guard_module_avis(user, db)
+    rv = db.query(Review).filter(Review.id == review_id, Review.user_id == user.id).first()
+    if not rv:
+        raise HTTPException(404, "Avis introuvable")
+    loc = None
+    if rv.location_id:
+        loc = db.query(Location).filter(Location.id == rv.location_id).first()
+    from adapters.ia_reviews import generate_reply
+    res = generate_reply(rv.text or "", loc.name if loc else "", rv.note or 5)
+    return {"review_id": rv.id, "reponse": res.get("reponse", ""),
+            "mode": res.get("mode", "template"), "detail": res.get("detail", "")}
+
+# --- Relances ---
+@app.post("/api/avisboost/reminders/plan", response_model=dict)
+def plan_reminders(visit_id: int, user: User = Depends(get_current_user),
+                   db: Session = Depends(get_db)):
+    """(Re)planifie les relances J+2 / J+5 / J+9 d'une visite."""
+    _guard_module_avis(user, db)
+    visit = db.query(Visit).filter(Visit.id == visit_id, Visit.user_id == user.id).first()
+    if not visit:
+        raise HTTPException(404, "Visite introuvable")
+    created = _plan_relances(db, user.id, visit.id, visit.visit_date, canal="whatsapp")
+    return {"ok": True, "created": len(created)}
+
+@app.get("/api/avisboost/reminders/due", response_model=dict)
+def reminders_due(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Relances dues : statut planifiee et date prévue <= aujourd'hui."""
+    _guard_module_avis(user, db)
+    due = db.query(Reminder).filter(
+        Reminder.user_id == user.id, Reminder.statut == "planifiee",
+        Reminder.date_prevue <= date.today()).order_by(Reminder.date_prevue).all()
+    visits = {v.id: v for v in db.query(Visit).filter(Visit.user_id == user.id).all()}
+    locations = {l.id: l for l in db.query(Location).filter(Location.user_id == user.id).all()}
+    items = []
+    for r in due:
+        v = visits.get(r.visit_id)
+        loc = locations.get(v.location_id) if v else None
+        items.append({
+            "id": r.id, "visit_id": r.visit_id, "canal": r.canal or "whatsapp",
+            "jour_offset": r.jour_offset, "date_prevue": r.date_prevue.isoformat(),
+            "client_name": v.client_name if v else "", "phone": v.phone or "" if v else "",
+            "location_name": loc.name if loc else "",
+        })
+    return {"due": items, "count": len(items)}
+
+@app.post("/api/avisboost/reminders/process", response_model=dict)
+def process_reminders(data: ProcessIn, user: User = Depends(get_current_user),
+                      db: Session = Depends(get_db)):
+    """Traite les relances dues via les adaptateurs.
+
+    Mode test (par défaut, sans credentials) : JOURNALISATION RÉELLE dans
+    avisboost-test-journal.log — aucun envoi réel, jamais de faux envoi.
+    Mode réel (credentials env présents) : envoi via Meta / Twilio / Brevo / OVH.
+    """
+    _guard_module_avis(user, db)
+    q = db.query(Reminder).filter(
+        Reminder.user_id == user.id, Reminder.statut == "planifiee",
+        Reminder.date_prevue <= date.today())
+    if data.ids:
+        q = q.filter(Reminder.id.in_(data.ids))
+    due = q.order_by(Reminder.date_prevue).all()
+    if not due:
+        return {"ok": True, "processed": 0, "details": [], "message": "Aucune relance due"}
+
+    visits = {v.id: v for v in db.query(Visit).filter(Visit.user_id == user.id).all()}
+    locations = {l.id: l for l in db.query(Location).filter(Location.user_id == user.id).all()}
+    from adapters.whatsapp_adapter import send_whatsapp
+    from adapters.sms_adapter import send_sms
+
+    details = []
+    for r in due:
+        v = visits.get(r.visit_id)
+        loc = locations.get(v.location_id) if v else None
+        client_first = (v.client_name.split()[0] if v and v.client_name else "client")
+        biz_name = loc.name if loc else "notre commerce"
+        fallback_q = (biz_name.split("—")[0].strip().replace(" ", "+") if loc else "")
+        lien = (loc.qr_url if loc and loc.qr_url
+                else "https://www.google.com/search?q=" + fallback_q)
+        msg = (f"Bonjour {client_first} 👋 Merci pour votre visite chez {biz_name} ! "
+               f"Si vous avez aimé, un petit avis Google ferait toute la différence "
+               f"pour notre équipe : {lien} 🙏 Merci !")
+        to = v.phone if v else ""
+        res = send_sms(to, msg) if r.canal == "sms" else send_whatsapp(to, msg)
+        r.statut = "envoyee" if res["ok"] else "echouee"
+        r.envoyee_le = datetime.now(timezone.utc)
+        r.log = res["detail"]
+        db.commit()
+        details.append({"id": r.id, "visit_id": r.visit_id, "client_name": v.client_name if v else "",
+                        "canal": r.canal, "jour_offset": r.jour_offset, "statut": r.statut,
+                        "mode": res.get("mode", "?"), "log": res["detail"]})
+    return {"ok": True, "processed": len(details), "details": details}
+
+# --- Stats ---
+@app.get("/api/avisboost/stats", response_model=dict)
+def avis_stats(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Statistiques AvisBoost (taux de réponse, note moyenne, avis/mois, relances)."""
+    _guard_module_avis(user, db)
+    return _avis_stats(user.id, db)
 
 if __name__ == "__main__":
     import uvicorn

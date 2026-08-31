@@ -240,6 +240,62 @@
   .offer-card .o-current { font-size: 0.72rem; color: var(--neon); margin-top: 0.6rem; font-weight: 700; }
   .offer-card .btn { width: 100%; margin-top: 0.9rem; font-size: 0.8rem; padding: 0.5rem 0.9rem; }
   .offer-note { color: var(--muted); font-size: 0.78rem; margin-top: 0.9rem; }
+  /* ---- AvisBoost : module avis ---- */
+  .avis-toolbar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+  .avis-tabs { display: flex; gap: 0.35rem; margin-bottom: 1.2rem; flex-wrap: wrap; border-bottom: 1px solid var(--border); padding-bottom: 0.7rem; }
+  .avis-tab {
+    background: transparent; border: 1px solid var(--border); color: var(--muted);
+    padding: 0.42rem 1.1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; font-family: inherit;
+    cursor: pointer; transition: all 0.25s;
+  }
+  .avis-tab:hover { border-color: var(--neon); color: var(--text); }
+  .avis-tab.active { background: var(--neon-soft); border-color: var(--neon); color: var(--neon); }
+  .avis-panel { display: none; }
+  .avis-panel.active { display: block; }
+  .review-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem;
+    margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .review-card:hover { transform: translateY(-2px); border-color: var(--neon); }
+  .review-card .rv-left { flex: 1; min-width: 240px; }
+  .review-card .rv-meta { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .stars { color: #fbbf24; letter-spacing: 0.12em; font-size: 0.95rem; }
+  .stars .dim { color: rgba(255,255,255,0.15); }
+  .rv-loc { font-size: 0.74rem; color: var(--muted); }
+  .rv-text { margin-top: 0.45rem; font-size: 0.88rem; line-height: 1.5; color: var(--text); }
+  .rv-reply { margin-top: 0.55rem; font-size: 0.8rem; color: var(--muted); border-left: 2px solid var(--neon); padding-left: 0.7rem; }
+  .rv-reply b { color: var(--neon); font-weight: 700; }
+  .badge { font-size: 0.68rem; font-weight: 800; padding: 0.22rem 0.6rem; border-radius: 999px; letter-spacing: 0.04em; }
+  .badge.ok { background: var(--neon-soft); color: var(--neon); border: 1px solid var(--neon); }
+  .badge.wait { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+  .rv-actions { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+  .reminder-group { margin-bottom: 1.1rem; }
+  .reminder-group .rg-title { font-weight: 800; font-size: 0.9rem; display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .reminder-group .rg-sub { color: var(--muted); font-size: 0.75rem; margin-top: 0.15rem; }
+  .timeline { position: relative; margin: 0.9rem 0 0.4rem 0.35rem; padding-left: 1.4rem; border-left: 2px solid var(--border); }
+  .timeline-item { position: relative; padding: 0.55rem 0 0.55rem 1rem; }
+  .timeline-item::before {
+    content: ""; position: absolute; left: -1.46rem; top: 0.85rem; width: 0.66rem; height: 0.66rem;
+    border-radius: 50%; background: var(--surface2); border: 2px solid var(--muted);
+  }
+  .timeline-item.sent::before { background: var(--neon); border-color: var(--neon); box-shadow: 0 0 10px var(--neon-soft); }
+  .timeline-item.failed::before { background: #f87171; border-color: #f87171; }
+  .timeline-item .ti-top { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+  .timeline-item .ti-jour { font-weight: 900; color: var(--neon); font-size: 0.9rem; }
+  .timeline-item .ti-date { font-size: 0.75rem; color: var(--muted); }
+  .timeline-item .ti-log { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.45; word-break: break-word; }
+  .st.planifiee { background: rgba(148,163,184,0.15); color: #cbd5e1; }
+  .st.envoyee { background: var(--neon-soft); color: var(--neon); }
+  .st.echouee { background: rgba(248,113,113,0.15); color: #f87171; }
+  .avis-legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .avis-legend span { font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 0.4rem; }
+  .legend-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; display: inline-block; }
+  @media (max-width: 620px) {
+    .review-card { flex-direction: column; }
+    .timeline { padding-left: 1.1rem; }
+    .timeline-item::before { left: -1.16rem; }
+  }
   @media (max-width: 620px) {
     .audit-card { flex-direction: column; align-items: flex-start; }
     .offer-card .o-desc { min-height: 0; }
@@ -393,6 +449,62 @@
     <div id="offers-block"></div>
   </div>
 
+  <!-- AvisBoost : module avis — relances J+2/J+5/J+9, avis, réponses IA, stats -->
+  <div id="module-avis" class="hidden">
+    <div class="avis-toolbar">
+      <button class="btn solid" id="btn-process-relances">✈ Envoyer les relances dues <span id="due-count-badge"></span></button>
+      <span class="audit-toolbar-note">Mode test actif : chaque relance est journalisée dans le fichier local <b>avisboost-test-journal.log</b> — aucun envoi réel tant que les comptes Meta / SMS ne sont pas activés (voir README).</span>
+    </div>
+
+    <div class="avis-tabs" id="avis-tabs">
+      <button class="avis-tab active" data-panel="avis-reviews">⭐ Mes avis</button>
+      <button class="avis-tab" data-panel="avis-relances">📨 Relances</button>
+      <button class="avis-tab" data-panel="avis-stats">📊 Statistiques</button>
+    </div>
+
+    <!-- Onglet Mes avis -->
+    <div class="avis-panel active" id="avis-reviews">
+      <div class="section-title">Avis reçus</div>
+      <div id="avis-reviews-list"></div>
+    </div>
+
+    <!-- Onglet Relances -->
+    <div class="avis-panel" id="avis-relances">
+      <div class="avis-legend">
+        <span><span class="legend-dot" style="background:var(--neon)"></span> Envoyée (test journalisé)</span>
+        <span><span class="legend-dot" style="background:#cbd5e1"></span> Planifiée</span>
+        <span><span class="legend-dot" style="background:#f87171"></span> Échouée</span>
+      </div>
+      <div class="section-title">Timeline des relances (J+2 / J+5 / J+9)</div>
+      <div id="avis-relances-list"></div>
+    </div>
+
+    <!-- Onglet Statistiques -->
+    <div class="avis-panel" id="avis-stats">
+      <div class="charts-grid">
+        <div class="chart-card wide">
+          <h3>Avis reçus par mois</h3>
+          <div class="chart-box tall"><canvas id="chart-avis-mois"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Répartition des notes</h3>
+          <div class="chart-box"><canvas id="chart-avis-notes"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <h3>Statut des relances</h3>
+          <div class="chart-box"><canvas id="chart-relances"></canvas></div>
+        </div>
+        <div class="chart-card wide" id="avis-rates-card">
+          <h3>Vos indicateurs</h3>
+          <div class="audit-delta" id="avis-rates"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" id="avis-offres-title">Votre offre AvisBoost</div>
+    <div id="avis-offers-block"></div>
+  </div>
+
   <div class="footer-note" id="footer-note">Portail client — vos données, votre suivi. Réponse sous 24 h.</div>
 </div>
 
@@ -464,7 +576,7 @@ function applyBrand(b) {
   document.documentElement.style.setProperty("--neon", b.color);
   document.documentElement.style.setProperty("--neon-soft", hexToRgba(b.color, 0.14));
   const l1 = document.getElementById("auth-logo"), l2 = document.getElementById("dash-logo");
-  const letter = b.slug === "skillvault" ? "S" : (b.slug === "prodia" ? "P" : "A");
+  const letter = b.slug === "skillvault" ? "S" : (b.slug === "prodia" ? "P" : (b.slug === "avisboost" ? "B" : "A"));
   l1.textContent = letter; l2.textContent = letter;
   document.getElementById("auth-brand").textContent = "Portail " + b.name;
   document.getElementById("dash-brand").textContent = b.name;
@@ -556,6 +668,7 @@ async function showDashboard() {
     const hasAuto = d.business.modules.includes("automations");
     const hasPacks = d.business.modules.includes("packs");
     const hasAudits = d.business.modules.includes("audits");
+    const hasAvis = d.business.modules.includes("avis");
     document.getElementById("charts-section").classList.toggle("hidden", !hasAuto);
     if (hasAuto && d.charts && d.charts.hours_by_week) {
       renderKpis(d);
@@ -566,6 +679,13 @@ async function showDashboard() {
         `<div class="stat-card"><div class="label">Gains annuels estimés</div><div class="value">${Math.round(h.dernier.gains_annuels_euros).toLocaleString("fr-FR")}<span class="unit"> €</span></div></div>` +
         `<div class="stat-card"><div class="label">Retour sur investissement</div><div class="value">${h.dernier.roi != null ? h.dernier.roi : "—"}<span class="unit"> ×</span></div></div>` +
         `<div class="stat-card"><div class="label">Audits réalisés</div><div class="value">${h.nb_audits}</div></div>`);
+    } else if (hasAvis && d.avisboost && d.avisboost.stats) {
+      const s = d.avisboost.stats;
+      statsGrid.insertAdjacentHTML("beforeend",
+        `<div class="stat-card"><div class="label">Avis reçus</div><div class="value">${s.avis_total || 0}</div></div>` +
+        `<div class="stat-card"><div class="label">Taux de réponse</div><div class="value">${s.taux_reponse != null ? s.taux_reponse : 0}<span class="unit"> %</span></div></div>` +
+        `<div class="stat-card"><div class="label">Note moyenne</div><div class="value">${s.note_moyenne != null ? s.note_moyenne : "—"}<span class="unit"> /5</span></div></div>` +
+        `<div class="stat-card"><div class="label">Relances dues</div><div class="value">${s.relances_due || 0}</div></div>`);
     } else if (hasPacks) {
       statsGrid.insertAdjacentHTML("beforeend",
         `<div class="stat-card"><div class="label">Packs achetés</div><div class="value">${d.stats.packs_achetes}</div></div>` +
@@ -582,11 +702,13 @@ async function showDashboard() {
     document.getElementById("module-packs").classList.toggle("hidden", !hasPacks);
     document.getElementById("module-invoices").classList.toggle("hidden", !d.business.modules.includes("invoices"));
     document.getElementById("module-audits").classList.toggle("hidden", !hasAudits);
+    document.getElementById("module-avis").classList.toggle("hidden", !hasAvis);
 
     if (hasAuto) renderAutomations(d);
     if (hasAuto) drawCharts();
     if (hasPacks) renderPacks(d);
     if (hasAudits) renderAudits(d);
+    if (hasAvis) renderAvisboost(d);
     renderInvoices(d);
   } catch (err) {
     // API injoignable (backend pas démarré, CORS, etc.) → message clair
@@ -970,6 +1092,280 @@ document.getElementById("site-filter").addEventListener("change", async (e) => {
     }
   } catch (err) { console.warn("Filtre site impossible", err); }
 });
+
+// ============ AVISBOOST : MODULE AVIS (relances J+2/J+5/J+9, avis, réponses IA) ============
+const OFFERS_AVISBOOST = [
+  { key: "Starter", price: 29, once: false, desc: "QR code avis, relances automatiques SMS & WhatsApp, tableau de bord, 1 emplacement, support email." },
+  { key: "Pro", price: 49, once: false, desc: "Tout le Starter + réponses automatiques IA aux avis, 2 emplacements, statistiques d'évolution, support prioritaire.", popular: true },
+  { key: "Setup", price: 149, once: true, desc: "Installation clé en main : connexion Google + canal SMS/WhatsApp configurés, formation 1 h en visio, accompagnement 30 jours." },
+];
+const AVIS_CONTACT = "agentiadeploiement@gmail.com";
+let AVIS_DATA = null;                 // dernier payload avisboost du dashboard
+let chartAvisMois = null, chartAvisNotes = null, chartRelances = null;
+let AVIS_ACTIVE_TAB = "avis-reviews";
+
+function renderAvisboost(d) {
+  AVIS_DATA = d.avisboost || { locations: [], visits: [], reminders: [], reviews: [], stats: {} };
+  renderAvisReviews(AVIS_DATA.reviews || []);
+  renderAvisRelances(AVIS_DATA.visits || [], AVIS_DATA.reminders || [], AVIS_DATA.locations || []);
+  drawAvisCharts(AVIS_DATA.stats || {});
+  renderAvisOffers(d.profil ? d.profil.plan : "");
+  // badge relances dues
+  const due = (AVIS_DATA.stats || {}).relances_due || 0;
+  const badge = document.getElementById("due-count-badge");
+  if (badge) badge.textContent = due > 0 ? "(" + due + ")" : "";
+}
+
+function switchAvisTab(name) {
+  AVIS_ACTIVE_TAB = name;
+  document.querySelectorAll("#avis-tabs .avis-tab").forEach(t => t.classList.toggle("active", t.dataset.panel === name));
+  document.querySelectorAll("#module-avis .avis-panel").forEach(p => p.classList.toggle("active", p.id === name));
+}
+
+document.querySelectorAll("#avis-tabs .avis-tab").forEach(t => {
+  t.addEventListener("click", () => switchAvisTab(t.dataset.panel));
+});
+
+function starsHtml(note) {
+  let s = "";
+  for (let i = 1; i <= 5; i++) s += i <= note ? "★" : '<span class="dim">★</span>';
+  return '<span class="stars">' + s + "</span>";
+}
+
+function locNameById(id) {
+  const l = (AVIS_DATA.locations || []).find(x => x.id === id);
+  return l ? l.name : "";
+}
+
+function renderAvisReviews(reviews) {
+  const list = document.getElementById("avis-reviews-list");
+  list.innerHTML = "";
+  if (!reviews.length) {
+    list.innerHTML = '<div class="empty">Aucun avis pour le moment. Vos avis Google arriveront ici dès la connexion (voir README).</div>';
+    return;
+  }
+  reviews.forEach(rv => {
+    const loc = locNameById(rv.location_id);
+    const repondu = !!rv.repondu_le;
+    list.insertAdjacentHTML("beforeend",
+      `<div class="review-card">
+        <div class="rv-left">
+          <div class="rv-meta">${starsHtml(rv.note)} <span class="rv-loc">${loc || "—"}</span>
+            <span class="badge ${repondu ? "ok" : "wait"}">${repondu ? "Répondu" : "En attente"}</span></div>
+          <div class="rv-text">${escapeHtml(rv.text || "")}</div>
+          ${repondu ? `<div class="rv-reply"><b>Votre réponse :</b> ${escapeHtml(rv.reponse || "")}</div>` : ""}
+        </div>
+        <div class="rv-actions">
+          <div style="text-align:right;font-size:0.75rem;color:var(--muted)">${rv.date}</div>
+          ${repondu ? "" : `<button class="btn" style="font-size:0.78rem;padding:0.4rem 0.9rem" onclick="openRespondModal(${rv.id})">Répondre</button>`}
+        </div>
+      </div>`);
+  });
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+function renderAvisRelances(visits, reminders, locations) {
+  const wrap = document.getElementById("avis-relances-list");
+  wrap.innerHTML = "";
+  if (!visits.length) {
+    wrap.innerHTML = '<div class="empty">Aucune visite enregistrée. Ajoutez une visite pour planifier les relances J+2 / J+5 / J+9.</div>';
+    return;
+  }
+  const byVisit = {};
+  reminders.forEach(r => { (byVisit[r.visit_id] = byVisit[r.visit_id] || []).push(r); });
+  visits.forEach(v => {
+    const rs = (byVisit[v.id] || []).sort((a, b) => a.jour_offset - b.jour_offset);
+    const loc = locations.find(l => l.id === v.location_id);
+    const statuses = rs.map(r => r.statut);
+    const hasSent = statuses.includes("envoyee");
+    const hasPending = statuses.includes("planifiee");
+    const group = document.createElement("div");
+    group.className = "reminder-group";
+    group.innerHTML = `<div class="rg-title">${escapeHtml(v.client_name)}
+        <span class="badge ${hasSent ? "ok" : "wait"}">${hasSent ? "Relancé" : "En attente"}</span>
+        <span class="badge ${statuses.includes("echouee") ? "wait" : ""}" style="${statuses.includes("echouee") ? "" : "display:none"}">Échec</span></div>
+      <div class="rg-sub">Visite du ${v.visit_date} · ${loc ? escapeHtml(loc.name) : ""} · ${escapeHtml(v.phone || "")}</div>
+      <div class="timeline">
+        ${rs.map(r => {
+          const st = r.statut;
+          const stLabel = st === "envoyee" ? "Envoyée (test journalisé)" : st === "echouee" ? "Échouée" : "Planifiée";
+          return `<div class="timeline-item ${st === "envoyee" ? "sent" : st === "echouee" ? "failed" : ""}">
+            <div class="ti-top"><span class="ti-jour">J+${r.jour_offset}</span>
+              <span class="ti-date">${r.date_prevue}</span>
+              <span class="st ${st}">${stLabel}</span>
+              <span class="ti-date" style="text-transform:uppercase;font-size:0.68rem">${r.canal === "sms" ? "SMS" : "WhatsApp"}</span>
+            </div>
+            ${r.log ? `<div class="ti-log">${escapeHtml(r.log)}</div>` : ""}
+          </div>`;
+        }).join("")}
+      </div>`;
+    wrap.appendChild(group);
+  });
+  if (!reminders.length) wrap.innerHTML = '<div class="empty">Aucune relance planifiée.</div>';
+}
+
+function drawAvisCharts(stats) {
+  if (typeof Chart === "undefined") return;
+  const NEON = getComputedStyle(document.documentElement).getPropertyValue("--neon").trim() || "#22d3ee";
+  const MUTED = "#9aa8a0", TEXT = "#e8f5ee", GRID = "rgba(255,255,255,0.05)";
+  Chart.defaults.color = MUTED;
+  Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+  const tip = { backgroundColor: "#0d1512", borderColor: NEON, borderWidth: 1, titleColor: TEXT, bodyColor: TEXT, padding: 10, cornerRadius: 8 };
+
+  [chartAvisMois, chartAvisNotes, chartRelances].forEach(c => { if (c) c.destroy(); });
+  chartAvisMois = chartAvisNotes = chartRelances = null;
+
+  // 1) Avis par mois (barres — données réelles)
+  const mois = (stats.avis_par_mois || []).filter(m => m.count > 0);
+  const labels = mois.map(m => m.mois);
+  const counts = mois.map(m => m.count);
+  if (labels.length) {
+    chartAvisMois = new Chart(document.getElementById("chart-avis-mois"), {
+      type: "bar",
+      data: { labels, datasets: [{ label: "Avis", data: counts, backgroundColor: hexToRgba(NEON, 0.6), hoverBackgroundColor: NEON, borderRadius: 8, borderSkipped: false, maxBarThickness: 46 }] },
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tip },
+        scales: { x: { grid: { display: false }, ticks: { color: MUTED } }, y: { beginAtZero: true, ticks: { color: MUTED, stepSize: 1 }, grid: { color: GRID } } } },
+    });
+  } else {
+    document.getElementById("chart-avis-mois").parentElement.innerHTML = '<div class="empty">Aucun avis pour le moment.</div>';
+  }
+
+  // 2) Répartition des notes (donut — données réelles)
+  const dist = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  (AVIS_DATA.reviews || []).forEach(rv => { const n = rv.note || 5; dist[n] = (dist[n] || 0) + 1; });
+  const noteColors = ["#f87171", "#fb923c", "#fbbf24", "#a3e635", NEON];
+  chartAvisNotes = new Chart(document.getElementById("chart-avis-notes"), {
+    type: "doughnut",
+    data: { labels: ["1★", "2★", "3★", "4★", "5★"], datasets: [{ data: [dist[1], dist[2], dist[3], dist[4], dist[5]], backgroundColor: noteColors, borderColor: "#0d1512", borderWidth: 3, hoverOffset: 7 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: "62%",
+      plugins: { legend: { position: "bottom", labels: { color: MUTED, padding: 12, usePointStyle: true, pointStyle: "circle" } }, tooltip: tip } },
+  });
+
+  // 3) Statut des relances (donut)
+  const rel = stats.relances || {};
+  chartRelances = new Chart(document.getElementById("chart-relances"), {
+    type: "doughnut",
+    data: { labels: ["Planifiées", "Envoyées (test)", "Échouées"], datasets: [{ data: [rel.planifiee || 0, rel.envoyee || 0, rel.echouee || 0], backgroundColor: ["#64748b", NEON, "#f87171"], borderColor: "#0d1512", borderWidth: 3, hoverOffset: 7 }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: "62%",
+      plugins: { legend: { position: "bottom", labels: { color: MUTED, padding: 12, usePointStyle: true, pointStyle: "circle" } }, tooltip: tip } },
+  });
+
+  // 4) Indicateurs
+  const rates = document.getElementById("avis-rates");
+  rates.innerHTML =
+    `<div class="delta-item"><div class="d-label">Taux de réponse</div><div class="d-value">${stats.taux_reponse != null ? stats.taux_reponse : 0}<span class="unit"> %</span></div><div class="d-sub">${stats.avis_repondus || 0} répondu(s) sur ${stats.avis_total || 0}</div></div>` +
+    `<div class="delta-item"><div class="d-label">Note moyenne</div><div class="d-value">${stats.note_moyenne != null ? stats.note_moyenne : "—"}<span class="unit"> /5</span></div><div class="d-sub">${stats.avis_total || 0} avis au total</div></div>` +
+    `<div class="delta-item"><div class="d-label">En attente</div><div class="d-value">${stats.avis_en_attente || 0}<span class="unit"> avis</span></div><div class="d-sub">à répondre pour gagner en visibilité</div></div>` +
+    `<div class="delta-item"><div class="d-label">Relances dues</div><div class="d-value">${stats.relances_due || 0}<span class="unit"> relances</span></div><div class="d-sub">${stats.relances ? stats.relances.envoyee || 0 : 0} déjà envoyées en test</div></div>`;
+}
+
+function renderAvisOffers(currentPlan) {
+  const block = document.getElementById("avis-offers-block");
+  block.innerHTML = "";
+  OFFERS_AVISBOOST.forEach(o => {
+    const isCurrent = (currentPlan || "").toLowerCase() === o.key.toLowerCase();
+    block.insertAdjacentHTML("beforeend",
+      `<div class="offer-card ${o.popular ? "popular" : ""}">
+        ${o.popular ? '<span class="o-badge">Le plus choisi</span>' : ""}
+        <div class="o-name">${o.key}</div>
+        <div class="o-price">${o.price}<small> ${o.once ? "€ une fois" : "€/mois"}</small></div>
+        <div class="o-desc">${o.desc}</div>
+        ${isCurrent ? '<div class="o-current">✓ Votre formule actuelle</div>' : ""}
+        <button class="btn ${o.popular ? "solid" : ""}" onclick="choisirOffreAvis('${o.key}', ${o.price})">${isCurrent ? "Votre formule" : "Choisir"}</button>
+      </div>`);
+  });
+  block.insertAdjacentHTML("beforeend",
+    `<p class="offer-note">Essai de 14 jours offert sur toutes les formules — sans carte bancaire. Le paiement en ligne (Stripe) arrive prochainement : écrivez-nous à <b>${AVIS_CONTACT}</b> pour activer AvisBoost dès aujourd'hui.</p>`);
+}
+
+function choisirOffreAvis(key, price) {
+  // PRÊT POUR STRIPE BILLING — pas d'activation sans feu vert (garde-fou)
+  const el = document.createElement("div");
+  el.style.cssText = "position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)";
+  el.innerHTML = `<div style="background:var(--surface);border:1px solid var(--neon);border-radius:16px;padding:1.6rem;max-width:420px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
+    <h3 style="margin-bottom:0.5rem">Formule ${key} — ${price} €${key === "Setup" ? " une fois" : "/mois"}</h3>
+    <p style="color:var(--muted);font-size:0.88rem;line-height:1.55">Le paiement en ligne (Stripe) sera activé très prochainement. Pour démarrer dès maintenant, écrivez-nous à <b>${AVIS_CONTACT}</b> — réponse sous 24 h.</p>
+    <div style="display:flex;gap:0.6rem;margin-top:1.1rem;justify-content:center">
+      <button class="btn" onclick="this.closest('div[style*=fixed]').remove()">Fermer</button>
+      <a class="btn solid" style="text-decoration:none" href="mailto:${AVIS_CONTACT}?subject=Demande%20formule%20${key}%20AvisBoost">Nous écrire</a>
+    </div>
+  </div>`;
+  document.body.appendChild(el);
+}
+
+// ---- Répondre à un avis : modal + suggestion IA (template local sans clé, LLM si LLM_API_KEY) ----
+function openRespondModal(reviewId) {
+  const rv = (AVIS_DATA.reviews || []).find(x => x.id === reviewId);
+  if (!rv) return;
+  const el = document.createElement("div");
+  el.id = "respond-modal";
+  el.style.cssText = "position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)";
+  el.innerHTML = `<div style="background:var(--surface);border:1px solid var(--neon);border-radius:16px;padding:1.6rem;max-width:520px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
+    <h3 style="margin-bottom:0.3rem">Répondre à l'avis ${starsHtml(rv.note)}</h3>
+    <p style="color:var(--muted);font-size:0.82rem;margin-bottom:0.8rem">« ${escapeHtml(rv.text || "")} » — ${rv.date} · ${escapeHtml(locNameById(rv.location_id) || "")}</p>
+    <textarea id="respond-text" rows="4" placeholder="Votre réponse au client…" style="width:100%;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:0.7rem;font-family:inherit;font-size:0.85rem;resize:vertical"></textarea>
+    <div style="display:flex;gap:0.6rem;margin-top:0.8rem;justify-content:space-between;flex-wrap:wrap">
+      <button class="btn" style="font-size:0.78rem" onclick="suggestReply(${rv.id})">✨ Suggérer une réponse IA</button>
+      <div style="display:flex;gap:0.6rem">
+        <button class="btn" onclick="document.getElementById('respond-modal').remove()">Annuler</button>
+        <button class="btn solid" onclick="saveRespond(${rv.id})">Enregistrer la réponse</button>
+      </div>
+    </div>
+    <div id="respond-msg" style="font-size:0.75rem;color:var(--muted);margin-top:0.6rem"></div>
+  </div>`;
+  document.body.appendChild(el);
+}
+
+async function suggestReply(reviewId) {
+  const msg = document.getElementById("respond-msg");
+  const ta = document.getElementById("respond-text");
+  msg.textContent = "Génération en cours…";
+  try {
+    const r = await fetch(API + "/avisboost/reviews/" + reviewId + "/suggest-reply", { method: "POST", headers: { "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json" }, body: "{}" });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    ta.value = d.reponse;
+    msg.textContent = "💡 " + (d.detail || "");
+  } catch (err) { msg.textContent = "Erreur : " + err.message; }
+}
+
+async function saveRespond(reviewId) {
+  const msg = document.getElementById("respond-msg");
+  const reponse = document.getElementById("respond-text").value.trim();
+  if (!reponse) { msg.textContent = "Écrivez une réponse avant d'enregistrer."; return; }
+  try {
+    const r = await fetch(API + "/avisboost/reviews/" + reviewId + "/respond", { method: "POST", headers: { "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json" }, body: JSON.stringify({ reponse }) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    document.getElementById("respond-modal").remove();
+    showDashboard();
+  } catch (err) { msg.textContent = "Erreur : " + err.message; }
+}
+
+// ---- Envoyer les relances dues (mode test = journalisation réelle, jamais de faux envoi) ----
+async function processRelances() {
+  const btn = document.getElementById("btn-process-relances");
+  const oldHtml = btn.innerHTML;                 // préserve le span badge (innerHTML, pas textContent)
+  const badge = btn.querySelector("span");
+  btn.disabled = true;
+  if (badge) badge.textContent = "Envoi en mode test…";
+  try {
+    const r = await fetch(API + "/avisboost/reminders/process", { method: "POST", headers: { "Authorization": "Bearer " + TOKEN, "Content-Type": "application/json" }, body: "{}" });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    let summary = d.processed > 0
+      ? d.processed + " relance(s) envoyée(s) en mode test — voir l'onglet Relances et le fichier avisboost-test-journal.log"
+      : (d.message || "Aucune relance due");
+    alert(summary);
+    showDashboard();
+  } catch (err) { alert("Erreur : " + err.message); }
+  btn.innerHTML = oldHtml;
+  btn.disabled = false;
+}
+document.getElementById("btn-process-relances").addEventListener("click", processRelances);
 
 // ============ INIT ============
 loadBusinesses();

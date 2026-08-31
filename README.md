@@ -1,6 +1,6 @@
 # Agentia — Portail Client V6 (graphiques + sécurité prod)
 
-Portail client multi-business (Agentia, SkillVault, **ProdIA**, + futurs) **prêt à la vente** :
+Portail client multi-business (Agentia, SkillVault, **ProdIA**, **AvisBoost**, + futurs) **prêt à la vente** :
 le client voit la valeur du Concierge IA en chiffres — heures récupérées, € économisés,
 ROI, statuts — avec des graphiques alimentés par les **vraies données** de la base
 (zéro simulateur).
@@ -33,6 +33,7 @@ Le `.env` et la base `*.db` sont dans `.gitignore` — **aucun secret ni donnée
 | Admin Agentia | `demba@agentia.admin` | `Demba2026!` |
 | Client SkillVault (packs) | `karim@menuiserie-diallo.fr` | `motdepasse123` |
 | Client démo ProdIA (audits) | `sophie@atelier-dupont.fr` | `client1234` |
+| Client démo AvisBoost (avis) | `claire@salon-lumiere.fr` | `client1234` |
 
 > ⚠️ Comptes de démonstration : changez-les (ou `PORTAIL_SEED_DEMO=0`) avant toute mise en production.
 > Le mot de passe démo du seed est configurable via `PORTAIL_DEMO_PASSWORD`.
@@ -162,15 +163,97 @@ lui affiche sa **courbe d'évolution réelle** — le suivi mensuel promis par l
 - Le bouton « Choisir » ouvre un rappel de contact (`prodia.audit@gmail.com`) — aucun paiement
   en ligne tant que le feu vert Stripe n'est pas donné.
 
+---
+
+## AvisBoost — relances SMS/WhatsApp + avis Google (module `avis`)
+
+AvisBoost est un **4ᵉ business du portail** (couleur lagune `#22d3ee`, module `avis`) :
+le client gère ses **avis Google**, ses **relances automatiques J+2 / J+5 / J+9**
+(SMS/WhatsApp) et ses **réponses IA** — tout le backend réel, avec les fournisseurs
+externes en **mode test journalisé** tant que les credentials ne sont pas fournis.
+
+### Modèle (tables créées au lancement)
+| Table | Rôle |
+|---|---|
+| `locations` | Emplacements du commerce (nom, adresse, google_place_id, qr_url) |
+| `visits` | Visite client (location, nom, téléphone, date, canal) → déclenche les relances |
+| `reminders` | Relance planifiée (visit, canal sms/whatsapp, J+2/J+5/J+9, statut, envoyee_le, log) |
+| `reviews` | Avis (location, note 1-5, texte, date, repondu_le, reponse) |
+
+### API
+| Endpoint | Description |
+|---|---|
+| `GET/POST /api/avisboost/locations` · `DELETE …/{id}` | CRUD emplacements |
+| `GET/POST /api/avisboost/visits` · `DELETE …/{id}` | CRUD visites — **la création planifie automatiquement J+2/J+5/J+9** |
+| `GET/POST /api/avisboost/reviews` · `DELETE …/{id}` | CRUD avis |
+| `POST /api/avisboost/reviews/{id}/respond` | Marque l'avis répondu (réponse réelle en base) |
+| `POST /api/avisboost/reviews/{id}/suggest-reply` | Suggère une réponse : LLM réel si `LLM_API_KEY`, sinon template local |
+| `POST /api/avisboost/reminders/plan` | (Re)planifie J+2/J+5/J+9 d'une visite |
+| `GET /api/avisboost/reminders/due` | Relances dues (planifiée et date ≤ aujourd'hui) |
+| `POST /api/avisboost/reminders/process` | Traite les dues via les adaptateurs (mode test = journalisation réelle) |
+| `GET /api/avisboost/stats` | Taux de réponse, note moyenne, avis/mois, relances par statut |
+| `GET /api/dashboard` | Renvoie aussi `avisboost` quand le business a le module `avis` |
+
+Tous les endpoints sont **protégés par module** : un client sans le module `avis` reçoit 403.
+
+### Adaptateurs fournisseurs (`adapters/`) — mode test par défaut
+| Adaptateur | Mode réel (env) | Mode test (sans credentials) |
+|---|---|---|
+| `whatsapp_adapter.py` | Meta Cloud API (`META_PHONE_ID`, `META_TOKEN`) → `graph.facebook.com/v20.0` | journalisation réelle dans `avisboost-test-journal.log` |
+| `sms_adapter.py` | `SMS_PROVIDER=twilio\|brevo\|ovh` + variables `SMS_*` | idem |
+| `google_reviews_adapter.py` | Google Business Profile (`GOOGLE_ACCESS_TOKEN`, `GOOGLE_LOCATION_ID`) | idem |
+| `ia_reviews.py` | LLM compatible OpenAI (`LLM_API_KEY`, option `LLM_MODEL`) | template local réel (version de base documentée) |
+
+> **Garde-fou zéro simulateur** : le mode test **n'envoie jamais rien** — chaque tentative
+> est journalisée (fichier horodaté, gitignoré, contient les numéros = PII locale) et
+> affichée dans l'onglet Relances. Le statut passe à « Envoyée (test journalisé) ».
+
+### Dashboard (3 onglets)
+- **Mes avis** : liste des avis (étoiles, emplacement, badge Répondu/En attente), bouton
+  « Répondre » avec suggestion IA, taux de réponse.
+- **Relances** : timeline par client J+2/J+5/J+9 avec statuts (Planifiée / Envoyée test / Échouée)
+  + bouton « ✈ Envoyer les relances dues » (process mode test).
+- **Statistiques** : barres avis/mois, donut notes, donut statut relances, indicateurs
+  (Chart.js local, zéro CDN).
+
+### Offres 29 / 49 / 149 €
+- Starter 29 €/mois · Pro 49 €/mois ⭐ (formule actuelle du client démo) · Setup unique 149 €.
+- Bloc affiché dans l'espace AvisBoost — **prêt pour Stripe Billing** mais **pas activé**
+  (feu vert requis). Bouton « Choisir » → rappel contact (`agentiadeploiement@gmail.com`).
+
+### Procédure d'activation des fournisseurs (actions humaines — mode réel)
+1. **WhatsApp (Meta Cloud API)** : créer un compte **Meta WhatsApp Business**, obtenir un
+   numéro de téléphone API (validation Meta : nom d'affichage, cas d'usage, politique de
+   confidentialité), générer un **jeton d'accès système** → poser `META_PHONE_ID` et
+   `META_TOKEN` dans l'env du serveur.
+2. **SMS France (Twilio/Brevo/OVH)** : s'abonner chez le fournisseur (conformité : mention
+   STOP, consentement client, expéditeur identifié) → poser `SMS_PROVIDER` + `SMS_*` dans l'env.
+3. **Google Business Profile** : créer un **projet Google Cloud**, activer l'API Business
+   Profile, obtenir les identifiants OAuth 2.0 + consentement du propriétaire de la fiche
+   (vérification Google) → poser `GOOGLE_ACCESS_TOKEN` / `GOOGLE_LOCATION_ID` dans l'env.
+4. **Réponses IA** : clé d'un LLM compatible OpenAI (OpenAI/Mistral/OpenRouter…) → poser
+   `LLM_API_KEY` (option `LLM_MODEL`). Sans clé : template local de base, documenté.
+5. **Paiement** : activer Stripe Billing uniquement après feu vert utilisateur (mission dédiée).
+
+### Captures (vente)
+- `screenshots/avisboost-avis.png` — onglet Mes avis (KPI + avis + offres)
+- `screenshots/avisboost-relances.png` — timeline des relances J+2/J+5/J+9
+- `screenshots/avisboost-stats.png` — courbe avis/mois + donuts + indicateurs
+
 ## Tests
 
 ```bash
-.venv/bin/python tests/test_api_v6.py      # login démo + dashboard + croisement SQLite (Agentia)
-.venv/bin/python tests/test_api_audits.py  # ProdIA : audits, history, POST réel, sécurité 403, non-régression
+.venv/bin/python tests/test_api_v6.py          # login démo + dashboard + croisement SQLite (Agentia)
+.venv/bin/python tests/test_api_audits.py      # ProdIA : audits, history, POST réel, sécurité 403, non-régression
+.venv/bin/python tests/test_api_avisboost.py   # AvisBoost : visites → relances J+2/J+5/J+9 → process mode test (journal réel) → avis → stats
 ```
 
 Vérifié en conditions réelles (navigateur) : login démo, 4 graphiques rendus avec les
 données de la base, filtre 7/30/90 j, 0 erreur console, rate-limit 5→429,
 non-régression SkillVault + ProdIA. Pour ProdIA : outil connecté → 15 questions →
 « Enregistrer dans mon espace » → POST réel → courbe d'évolution mise à jour
-(vérifié en navigateur, données croisées avec SQLite).
+(vérifié en navigateur, données croisées avec SQLite). Pour AvisBoost : login démo
+Claire, 3 onglets (Mes avis / Relances / Statistiques) alimentés par la base,
+création de visite → planification J+2/J+5/J+9 réelle → process mode test → journal
+`avisboost-test-journal.log` alimenté, réponse IA (template local) enregistrée en base,
+taux de réponse recalculé, 0 erreur console.

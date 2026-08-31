@@ -3,6 +3,9 @@
 
 # Base de données locale (recréée par le seed au 1er lancement)
 *.db
+
+# Journal mode test AvisBoost (contient des numéros de téléphone = PII)
+avisboost-test-journal*.log
 *.sqlite
 *.sqlite3
 
