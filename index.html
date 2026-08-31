@@ -16,6 +16,16 @@
     --muted: #9aa8a0;
     --border: rgba(255,255,255,0.07);
   }
+  /* ---- bandeau « démo statique » (visible seulement si le backend est absent) ---- */
+  #static-demo-banner {
+    display: none; position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
+    background: linear-gradient(90deg, #5a2e00, #7a3b00); color: #ffd9a8;
+    font-size: 0.8rem; padding: 0.55rem 1rem; text-align: center;
+    border-bottom: 1px solid rgba(255,190,110,0.35); line-height: 1.45;
+  }
+  #static-demo-banner a { color: #ffd9a8; font-weight: 700; text-decoration: underline; }
+  #static-demo-banner.show { display: block; }
+  body.has-static-banner { padding-top: 2.4rem; }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
@@ -313,6 +323,9 @@
 </head>
 <body>
 
+<!-- Bandeau « démo statique » : affiché si le backend n'est pas joignable (ex : GitHub Pages) -->
+<div id="static-demo-banner">⚠️ <b>Démo statique</b> — le backend du portail n'est pas déployé sur cette adresse : la connexion et les données ne fonctionnent pas ici. Démo complète en local uniquement. <a href="https://github.com/Dembis91-940/agentia-portail" target="_blank" rel="noopener">Voir le dépôt →</a></div>
+
 <!-- Ambiance vivante V5 -->
 <div class="grain"></div>
 <div class="particles" id="particles"></div>
@@ -514,6 +527,26 @@ const API = "/api";
 let TOKEN = localStorage.getItem("portail_token");
 let BUSINESSES = [];
 let CURRENT_BIZ = "agentia";   // espace client Agentia (chaque business aura le sien)
+
+// ============ DÉTECTION « démo statique » (backend absent, ex : GitHub Pages) ============
+(function () {
+  var banner = document.getElementById("static-demo-banner");
+  if (!banner) return;
+  var done = false;
+  function show() {
+    if (done) return;
+    done = true;
+    banner.classList.add("show");
+    document.body.classList.add("has-static-banner");
+  }
+  // L'API répond (local / prod) → pas de bandeau. Timeout 4 s → on considère statique.
+  fetch(API + "/health", { method: "GET", cache: "no-store" })
+    .then(function (r) {
+      if (!r.ok) show();
+    })
+    .catch(show);
+  setTimeout(show, 4000); // sécurité : si la requête pend, on affiche quand même
+})();
 
 // ============ AMBIANCE V5 ============
 // Particules
