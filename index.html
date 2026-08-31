@@ -194,6 +194,56 @@
   .pill:hover { border-color: var(--muted); color: var(--text); }
   .pill.active { border-color: var(--neon); color: var(--neon); background: var(--neon-soft); }
   @media (max-width: 720px) { .charts-grid { grid-template-columns: 1fr; } }
+  /* ---- ProdIA : module audits ---- */
+  .audit-toolbar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+  .audit-toolbar-note { color: var(--muted); font-size: 0.82rem; max-width: 480px; }
+  .site-select {
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    padding: 0.3rem 0.7rem; border-radius: 8px; font-size: 0.78rem; font-family: inherit; outline: none;
+  }
+  .site-select:focus { border-color: var(--neon); }
+  .audit-delta { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; padding: 0.4rem 0 0.6rem; }
+  .delta-item .d-label { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .delta-item .d-value { font-size: 1.6rem; font-weight: 900; color: var(--neon); margin-top: 0.25rem; }
+  .delta-item .d-sub { font-size: 0.78rem; color: var(--muted); }
+  .delta-item .d-value.up { color: var(--neon); }
+  .delta-item .d-value.down { color: #f87171; }
+  .audit-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem;
+    margin-bottom: 0.8rem; display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .audit-card:hover { transform: translateY(-2px); border-color: var(--neon); }
+  .audit-card .a-left { flex: 1; min-width: 220px; }
+  .audit-card .a-name { font-weight: 800; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+  .audit-card .a-date { color: var(--muted); font-size: 0.8rem; margin-top: 0.2rem; }
+  .audit-card .a-score { display: flex; align-items: baseline; gap: 0.3rem; }
+  .audit-card .a-score b { font-size: 1.7rem; font-weight: 900; color: var(--neon); }
+  .audit-card .a-score small { color: var(--muted); font-size: 0.8rem; }
+  .audit-card .a-chiffres { display: flex; gap: 1.4rem; margin-top: 0.45rem; flex-wrap: wrap; }
+  .audit-card .a-chiffres span { font-size: 0.8rem; color: var(--muted); }
+  .audit-card .a-chiffres b { color: var(--text); font-weight: 800; }
+  .plan-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+  .plan-tag { font-size: 0.68rem; padding: 0.2rem 0.55rem; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); }
+  .offers-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .offer-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem;
+    position: relative; overflow: hidden; transition: transform 0.3s, border-color 0.3s;
+  }
+  .offer-card:hover { transform: translateY(-3px); border-color: var(--neon); }
+  .offer-card.popular { border-color: var(--neon); box-shadow: 0 0 26px var(--neon-soft); }
+  .offer-card .o-badge { position: absolute; top: 0.8rem; right: 0.8rem; font-size: 0.62rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; background: var(--neon); color: #06281a; padding: 0.22rem 0.6rem; border-radius: 999px; }
+  .offer-card .o-name { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .offer-card .o-price { font-size: 1.9rem; font-weight: 900; color: var(--neon); margin-top: 0.35rem; }
+  .offer-card .o-price small { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+  .offer-card .o-desc { font-size: 0.82rem; color: var(--muted); margin-top: 0.5rem; line-height: 1.55; min-height: 3.2em; }
+  .offer-card .o-current { font-size: 0.72rem; color: var(--neon); margin-top: 0.6rem; font-weight: 700; }
+  .offer-card .btn { width: 100%; margin-top: 0.9rem; font-size: 0.8rem; padding: 0.5rem 0.9rem; }
+  .offer-note { color: var(--muted); font-size: 0.78rem; margin-top: 0.9rem; }
+  @media (max-width: 620px) {
+    .audit-card { flex-direction: column; align-items: flex-start; }
+    .offer-card .o-desc { min-height: 0; }
+  }
   @media (max-width: 620px) {
     .dash-wrap { padding: 1rem; }
     .auto-card, .pack-card { flex-direction: column; align-items: flex-start; }
@@ -231,6 +281,9 @@
     <div style="text-align:center;margin-top:0.9rem;font-size:0.72rem;color:var(--muted)">Accès démo local — compte fourni par votre concierge IA</div>
 
     <form id="register-form" class="hidden">
+      <div class="field"><label>Votre espace</label>
+        <div class="business-picker" id="biz-picker"></div>
+      </div>
       <div class="field"><label>Nom complet</label><input type="text" id="reg-name" required placeholder="Prénom Nom"></div>
       <div class="field"><label>Entreprise</label><input type="text" id="reg-company" placeholder="Votre société"></div>
       <div class="field"><label>Email</label><input type="email" id="reg-email" required placeholder="vous@entreprise.fr"></div>
@@ -302,6 +355,44 @@
     <div id="inv-wrap"></div>
   </div>
 
+  <!-- ProdIA : module audits — suivi mensuel du score / gains / ROI (offre Pro) -->
+  <div id="module-audits" class="hidden">
+    <div class="audit-toolbar">
+      <button class="btn solid" id="btn-refaire-audit">↻ Refaire l'audit</button>
+      <span class="audit-toolbar-note">Chaque nouvel audit est daté et comparé au précédent : vous voyez votre progression mois après mois.</span>
+    </div>
+
+    <div class="section-title">Évolution</div>
+    <div class="charts-grid" id="audits-charts">
+      <div class="chart-card wide">
+        <h3><span>Score de productivité IA /100</span>
+          <select id="site-filter" class="site-select" aria-label="Filtrer par site">
+            <option value="">Tous les sites</option>
+          </select>
+        </h3>
+        <div class="chart-box tall"><canvas id="chart-score"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Gains annuels estimés (€)</h3>
+        <div class="chart-box"><canvas id="chart-gains"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>ROI par audit (×)</h3>
+        <div class="chart-box"><canvas id="chart-roi"></canvas></div>
+      </div>
+      <div class="chart-card wide" id="audit-delta-card">
+        <h3>Depuis le mois précédent</h3>
+        <div class="audit-delta" id="audit-delta"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Mes audits</div>
+    <div id="audits-list"></div>
+
+    <div class="section-title" id="offres-title">Votre offre ProdIA</div>
+    <div id="offers-block"></div>
+  </div>
+
   <div class="footer-note" id="footer-note">Portail client — vos données, votre suivi. Réponse sous 24 h.</div>
 </div>
 
@@ -342,18 +433,38 @@ document.addEventListener("mousemove", e => {
 
 // ============ BUSINESS ============
 async function loadBusinesses() {
-  // Espace client Agentia : on charge le branding Agentia directement
-  // (le multi-business reste supporté par le backend pour les futurs espaces)
   const r = await fetch(API + "/businesses");
   BUSINESSES = await r.json();
+  // Picker d'espace (inscription) : Agentia / SkillVault / ProdIA…
+  const picker = document.getElementById("biz-picker");
+  picker.innerHTML = "";
+  BUSINESSES.forEach(b => {
+    const chip = document.createElement("div");
+    chip.className = "biz-chip" + (b.slug === CURRENT_BIZ ? " active" : "");
+    chip.textContent = b.name;
+    chip.dataset.slug = b.slug;
+    chip.onclick = () => selectBiz(b.slug);
+    picker.appendChild(chip);
+  });
   const biz = BUSINESSES.find(b => b.slug === "agentia") || BUSINESSES[0];
-  if (biz) { CURRENT_BIZ = biz.slug; applyBrand(biz); }
+  if (biz) { CURRENT_BIZ = biz.slug; applyBrand(biz); refreshPicker(); }
+}
+function selectBiz(slug) {
+  CURRENT_BIZ = slug;
+  const biz = BUSINESSES.find(b => b.slug === slug);
+  if (biz) applyBrand(biz);
+  refreshPicker();
+}
+function refreshPicker() {
+  document.querySelectorAll("#biz-picker .biz-chip").forEach(c => {
+    c.classList.toggle("active", c.dataset.slug === CURRENT_BIZ);
+  });
 }
 function applyBrand(b) {
   document.documentElement.style.setProperty("--neon", b.color);
   document.documentElement.style.setProperty("--neon-soft", hexToRgba(b.color, 0.14));
   const l1 = document.getElementById("auth-logo"), l2 = document.getElementById("dash-logo");
-  const letter = b.slug === "skillvault" ? "S" : "A";
+  const letter = b.slug === "skillvault" ? "S" : (b.slug === "prodia" ? "P" : "A");
   l1.textContent = letter; l2.textContent = letter;
   document.getElementById("auth-brand").textContent = "Portail " + b.name;
   document.getElementById("dash-brand").textContent = b.name;
@@ -444,9 +555,17 @@ async function showDashboard() {
     statsGrid.innerHTML = "";
     const hasAuto = d.business.modules.includes("automations");
     const hasPacks = d.business.modules.includes("packs");
+    const hasAudits = d.business.modules.includes("audits");
     document.getElementById("charts-section").classList.toggle("hidden", !hasAuto);
     if (hasAuto && d.charts && d.charts.hours_by_week) {
       renderKpis(d);
+    } else if (hasAudits && d.audits_history && d.audits_history.dernier) {
+      const h = d.audits_history;
+      statsGrid.insertAdjacentHTML("beforeend",
+        `<div class="stat-card"><div class="label">Score actuel</div><div class="value">${h.dernier.score_global}<span class="unit"> /100</span></div></div>` +
+        `<div class="stat-card"><div class="label">Gains annuels estimés</div><div class="value">${Math.round(h.dernier.gains_annuels_euros).toLocaleString("fr-FR")}<span class="unit"> €</span></div></div>` +
+        `<div class="stat-card"><div class="label">Retour sur investissement</div><div class="value">${h.dernier.roi != null ? h.dernier.roi : "—"}<span class="unit"> ×</span></div></div>` +
+        `<div class="stat-card"><div class="label">Audits réalisés</div><div class="value">${h.nb_audits}</div></div>`);
     } else if (hasPacks) {
       statsGrid.insertAdjacentHTML("beforeend",
         `<div class="stat-card"><div class="label">Packs achetés</div><div class="value">${d.stats.packs_achetes}</div></div>` +
@@ -462,10 +581,12 @@ async function showDashboard() {
     document.getElementById("module-automations").classList.toggle("hidden", !hasAuto);
     document.getElementById("module-packs").classList.toggle("hidden", !hasPacks);
     document.getElementById("module-invoices").classList.toggle("hidden", !d.business.modules.includes("invoices"));
+    document.getElementById("module-audits").classList.toggle("hidden", !hasAudits);
 
     if (hasAuto) renderAutomations(d);
     if (hasAuto) drawCharts();
     if (hasPacks) renderPacks(d);
+    if (hasAudits) renderAudits(d);
     renderInvoices(d);
   } catch (err) {
     // API injoignable (backend pas démarré, CORS, etc.) → message clair
@@ -678,6 +799,177 @@ function renderInvoices(d) {
     wrap.innerHTML = html;
   }
 }
+
+// ============ PRODIA : MODULE AUDITS (suivi mensuel score / gains / ROI) ============
+const OFFERS_PRODIA = [
+  { key: "Starter",  price: 19, desc: "Audit complet d'1 service IA, score 0-100, gains estimés en euros, plan d'action 30-60-90 jours, export PDF." },
+  { key: "Pro",      price: 39, desc: "Audit de 5 services IA, suivi mensuel du score et du ROI, mesure du temps gagné chaque mois, recommandations couper / garder / développer, point mensuel.", popular: true },
+  { key: "Business", price: 69, desc: "Tout le contenu Pro, audit multi-sites (jusqu'à 5), dashboard consolidé, rapport PDF personnalisé, formation des équipes." },
+];
+let AUDIT_HIST = null;   // dernier payload /api/audits/history
+let chartScore = null, chartGains = null, chartRoi = null;
+
+function renderAudits(d) {
+  AUDIT_HIST = d.audits_history || {};
+  renderSiteFilter(AUDIT_HIST.sites || []);
+  renderAuditList(d.audits || []);
+  renderOffers(d.profil ? d.profil.plan : "");
+  drawAuditCharts();
+}
+
+function renderSiteFilter(sites) {
+  const sel = document.getElementById("site-filter");
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Tous les sites</option>' +
+    (sites || []).map(s => `<option value="${s.replace(/"/g, "&quot;")}">${s}</option>`).join("");
+  if (current) sel.value = current;
+}
+
+function renderAuditList(audits) {
+  const list = document.getElementById("audits-list");
+  list.innerHTML = "";
+  if (!audits.length) {
+    list.innerHTML = '<div class="empty">Aucun audit enregistré pour le moment. Lancez votre premier audit pour créer votre courbe d\u2019évolution.</div>';
+    return;
+  }
+  audits.forEach(a => {
+    const axes = Object.values(a.score_axes || {});
+    const moy = axes.length ? Math.round(axes.reduce((x, y) => x + y, 0) / axes.length) : 0;
+    const plan = a.plan_action || {};
+    const planTags = [];
+    if (plan["30j"] && plan["30j"].length) planTags.push("30 j : " + plan["30j"].length + " actions");
+    if (plan["60j"] && plan["60j"].length) planTags.push("60 j : " + plan["60j"].length + " actions");
+    if (plan["90j"] && plan["90j"].length) planTags.push("90 j : " + plan["90j"].length + " actions");
+    const roi = a.roi != null ? "× " + a.roi : "—";
+    list.insertAdjacentHTML("beforeend",
+      `<div class="audit-card">
+        <div class="a-left">
+          <div class="a-name">${a.site_name} <span class="st ${a.score_global >= 65 ? "active" : "en_cours"}">${a.formule || "Pro"}</span></div>
+          <div class="a-date">${a.date} · Moyenne des axes : ${moy}/100</div>
+          ${planTags.length ? `<div class="plan-tags">${planTags.map(t => `<span class="plan-tag">${t}</span>`).join("")}</div>` : ""}
+        </div>
+        <div style="text-align:right">
+          <div class="a-score"><b>${a.score_global}</b><small>/100</small></div>
+          <div class="a-chiffres">
+            <span>Gains <b>${Math.round(a.gains_annuels_euros).toLocaleString("fr-FR")} €/an</b></span>
+            <span>ROI <b>${roi}</b></span>
+          </div>
+        </div>
+      </div>`);
+  });
+}
+
+function drawAuditCharts() {
+  if (typeof Chart === "undefined") return;
+  const NEON = getComputedStyle(document.documentElement).getPropertyValue("--neon").trim() || "#d4a017";
+  const MUTED = "#9aa8a0", TEXT = "#e8f5ee", GRID = "rgba(255,255,255,0.05)";
+  Chart.defaults.color = MUTED;
+  Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+  const tip = { backgroundColor: "#0d1512", borderColor: NEON, borderWidth: 1, titleColor: TEXT, bodyColor: TEXT, padding: 10, cornerRadius: 8 };
+
+  [chartScore, chartGains, chartRoi].forEach(c => { if (c) c.destroy(); });
+  chartScore = chartGains = chartRoi = null;
+
+  const labels = AUDIT_HIST.labels || [];
+  const scores = AUDIT_HIST.scores || [];
+  const gains = AUDIT_HIST.gains || [];
+  const rois = (AUDIT_HIST.rois || []).map(r => r != null ? r : 0);
+
+  if (!labels.length) return;
+
+  // 1) Courbe du score /100
+  chartScore = new Chart(document.getElementById("chart-score"), {
+    type: "line",
+    data: { labels, datasets: [{ label: "Score", data: scores, borderColor: NEON, backgroundColor: hexToRgba(NEON, 0.22), fill: true, tension: 0.35, borderWidth: 2.5, pointRadius: 4, pointBackgroundColor: NEON, pointBorderColor: "#06281a", pointBorderWidth: 1.5 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tip },
+      scales: { x: { grid: { color: GRID }, ticks: { color: MUTED } }, y: { min: 0, max: 100, grid: { color: GRID }, ticks: { color: MUTED } } } },
+  });
+
+  // 2) Barres des gains annuels estimés (€)
+  chartGains = new Chart(document.getElementById("chart-gains"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "Gains €/an", data: gains, backgroundColor: hexToRgba(NEON, 0.6), hoverBackgroundColor: NEON, borderRadius: 6, borderSkipped: false, maxBarThickness: 42 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tip },
+      scales: { x: { grid: { display: false }, ticks: { color: MUTED } }, y: { beginAtZero: true, grid: { color: GRID }, ticks: { color: MUTED, callback: v => v.toLocaleString("fr-FR") } } } },
+  });
+
+  // 3) ROI par audit
+  chartRoi = new Chart(document.getElementById("chart-roi"), {
+    type: "bar",
+    data: { labels, datasets: [{ label: "ROI", data: rois, backgroundColor: hexToRgba(NEON, 0.35), hoverBackgroundColor: NEON, borderRadius: 6, borderSkipped: false, maxBarThickness: 42 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: tip },
+      scales: { x: { grid: { display: false }, ticks: { color: MUTED } }, y: { beginAtZero: true, grid: { color: GRID }, ticks: { color: MUTED } } } },
+  });
+
+  // Carte delta : comparaison avec le précédent
+  const delta = document.getElementById("audit-delta");
+  const prev = AUDIT_HIST.precedent;
+  const last = AUDIT_HIST.dernier;
+  if (prev && last) {
+    const ds = last.score_global - prev.score_global;
+    const dg = last.gains_annuels_euros - prev.gains_annuels_euros;
+    const sCls = ds >= 0 ? "up" : "down";
+    const gCls = dg >= 0 ? "up" : "down";
+    delta.innerHTML =
+      `<div class="delta-item"><div class="d-label">Score</div><div class="d-value ${sCls}">${ds >= 0 ? "+" : ""}${ds}<span class="unit"> pts</span></div><div class="d-sub">${prev.score_global} → ${last.score_global} /100</div></div>` +
+      `<div class="delta-item"><div class="d-label">Gains annuels</div><div class="d-value ${gCls}">${dg >= 0 ? "+" : ""}${Math.round(dg).toLocaleString("fr-FR")}<span class="unit"> €</span></div><div class="d-sub">${Math.round(prev.gains_annuels_euros).toLocaleString("fr-FR")} → ${Math.round(last.gains_annuels_euros).toLocaleString("fr-FR")} €</div></div>` +
+      `<div class="delta-item"><div class="d-label">ROI</div><div class="d-value">× ${last.roi != null ? last.roi : "—"}</div><div class="d-sub">vs × ${prev.roi != null ? prev.roi : "—"} au précédent</div></div>`;
+  } else {
+    delta.innerHTML = '<div class="empty" style="padding:0.8rem 1rem">Enregistrez au moins 2 audits (à des dates différentes) pour voir votre évolution.</div>';
+  }
+}
+
+function renderOffers(currentPlan) {
+  const block = document.getElementById("offers-block");
+  block.innerHTML = "";
+  OFFERS_PRODIA.forEach(o => {
+    const isCurrent = (currentPlan || "").toLowerCase() === o.key.toLowerCase();
+    block.insertAdjacentHTML("beforeend",
+      `<div class="offer-card ${o.popular ? "popular" : ""}">
+        ${o.popular ? '<span class="o-badge">Le plus choisi</span>' : ""}
+        <div class="o-name">${o.key}</div>
+        <div class="o-price">${o.price}<small> €/mois</small></div>
+        <div class="o-desc">${o.desc}</div>
+        ${isCurrent ? '<div class="o-current">✓ Votre formule actuelle</div>' : ""}
+        <button class="btn ${o.popular ? "solid" : ""}" data-offer="${o.key}" onclick="choisirOffre('${o.key}', ${o.price})">${isCurrent ? "Votre formule" : "Choisir"}</button>
+      </div>`);
+  });
+  block.insertAdjacentHTML("beforeend",
+    `<p class="offer-note">Essai de 14 jours offert sur toutes les formules — sans carte bancaire. Le paiement en ligne arrive prochainement : écrivez-nous à <b>prodia.audit@gmail.com</b> pour activer votre suivi mensuel dès aujourd'hui.</p>`);
+}
+
+function choisirOffre(key, price) {
+  // PRÊT POUR STRIPE BILLING — pas d'activation sans feu vert (garde-fou)
+  const el = document.createElement("div");
+  el.style.cssText = "position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(4px)";
+  el.innerHTML = `<div style="background:var(--surface);border:1px solid var(--neon);border-radius:16px;padding:1.6rem;max-width:420px;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,0.5)">
+    <h3 style="margin-bottom:0.5rem">Formule ${key} — ${price} €/mois</h3>
+    <p style="color:var(--muted);font-size:0.88rem;line-height:1.55">Le paiement en ligne (Stripe) sera activé très prochainement. Pour démarrer dès maintenant, écrivez-nous à <b>prodia.audit@gmail.com</b> — réponse sous 24 h.</p>
+    <div style="display:flex;gap:0.6rem;margin-top:1.1rem;justify-content:center">
+      <button class="btn" onclick="this.closest('div[style*=fixed]').remove()">Fermer</button>
+      <a class="btn solid" style="text-decoration:none" href="mailto:prodia.audit@gmail.com?subject=Demande%20formule%20${key}%20ProdIA">Nous écrire</a>
+    </div>
+  </div>`;
+  document.body.appendChild(el);
+}
+
+// Bouton « Refaire l'audit » → outil d'audit connecté (même origine, token partagé)
+document.getElementById("btn-refaire-audit").addEventListener("click", () => {
+  window.location.href = "/audit";
+});
+
+// Filtre multi-sites : recharge les séries depuis l'API (données réelles, pas de filtre client)
+document.getElementById("site-filter").addEventListener("change", async (e) => {
+  const site = e.target.value;
+  try {
+    const url = API + "/audits/history" + (site ? "?site=" + encodeURIComponent(site) : "");
+    const r = await fetch(url, { headers: { "Authorization": "Bearer " + TOKEN } });
+    if (r.ok) {
+      AUDIT_HIST = await r.json();
+      drawAuditCharts();
+    }
+  } catch (err) { console.warn("Filtre site impossible", err); }
+});
 
 // ============ INIT ============
 loadBusinesses();

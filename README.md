@@ -1,6 +1,6 @@
 # Agentia — Portail Client V6 (graphiques + sécurité prod)
 
-Portail client multi-business (Agentia, SkillVault, + futurs) **prêt à la vente** :
+Portail client multi-business (Agentia, SkillVault, **ProdIA**, + futurs) **prêt à la vente** :
 le client voit la valeur du Concierge IA en chiffres — heures récupérées, € économisés,
 ROI, statuts — avec des graphiques alimentés par les **vraies données** de la base
 (zéro simulateur).
@@ -32,6 +32,7 @@ Le `.env` et la base `*.db` sont dans `.gitignore` — **aucun secret ni donnée
 | Client démo Agentia (graphiques) | `client@boulangerie-martin.fr` | `client1234` |
 | Admin Agentia | `demba@agentia.admin` | `Demba2026!` |
 | Client SkillVault (packs) | `karim@menuiserie-diallo.fr` | `motdepasse123` |
+| Client démo ProdIA (audits) | `sophie@atelier-dupont.fr` | `client1234` |
 
 > ⚠️ Comptes de démonstration : changez-les (ou `PORTAIL_SEED_DEMO=0`) avant toute mise en production.
 > Le mot de passe démo du seed est configurable via `PORTAIL_DEMO_PASSWORD`.
@@ -118,13 +119,58 @@ risque de casser le site et donne un cycle de vie propre au produit).
 
 - Repo : `https://github.com/Dembis91-940/agentia-portail`
 - Capture dashboard (pour la vente) : `screenshots/dashboard-v6.png`
+- Capture ProdIA (pour la vente) : `screenshots/evolution-score.png`
+
+---
+
+## ProdIA — suivi mensuel du score / gains / ROI (module `audits`)
+
+ProdIA est un **3ᵉ business du portail** (couleur or `#d4a017`, module `audits`) :
+le client remplit l'audit (outil connecté), enregistre sa snapshot, et le portail
+lui affiche sa **courbe d'évolution réelle** — le suivi mensuel promis par l'offre Pro.
+
+### Modèle
+- `audit_snapshots` : `user_id, site_name (multi-sites), date, score_global, score_axes (JSON),
+  gains_annuels_euros, cout_outils_annuel, roi, plan_action (JSON 30-60-90), formule`
+- Table créée automatiquement au lancement (`Base.metadata.create_all`).
+
+### API
+| Endpoint | Description |
+|---|---|
+| `POST /api/audits` | Enregistre un audit (body : `site_name, date?, score_global, score_axes, gains_annuels_euros, cout_outils_annuel, roi, plan_action, formule`) — réservé aux espaces avec le module `audits` (403 sinon) |
+| `GET /api/audits` | Liste des audits du client (du plus récent au plus ancien) |
+| `GET /api/audits/history?site=` | Séries temporelles pour les graphiques : labels, scores, gains, rois, deltas, sites distincts, dernier/précédent |
+| `GET /api/dashboard` | Renvoie aussi `audits` + `audits_history` quand le business a le module `audits` |
+
+### Outil d'audit connecté
+- `prodia/outil-audit.html` (copie connectée de l'outil ProdIA) servi sur **`/audit`**,
+  assets sur `/audit-assets` — **même origine que le portail** : le token JWT
+  (`localStorage.portail_token`) est partagé, zéro CORS.
+- Si un token est présent, l'outil affiche **« Enregistrer dans mon espace »** après le score
+  (sinon, formulaire EmailJS inchangé pour les visiteurs).
+- `POST /api/audits` reçoit le score, les axes, les gains, le coût, le ROI et le plan 30-60-90
+  réellement calculés par l'outil → la courbe du portail est mise à jour.
+
+### Multi-sites (Business 69 €)
+- Chaque audit a un `site_name` ; `GET /api/audits/history?site=X` filtre par site.
+- Le portail affiche un **sélecteur de site** (Tous les sites / site A / site B) qui
+  recharge les séries depuis l'API (données réelles, pas de filtre côté client).
+
+### Offres 19 / 39 / 69 €
+- Bloc d'offres affiché dans l'espace ProdIA (Starter 19 € · Pro 39 € ⭐ · Business 69 €,
+  essai 14 jours) — **prêt pour Stripe Billing** mais **pas activé** (feu vert requis).
+- Le bouton « Choisir » ouvre un rappel de contact (`prodia.audit@gmail.com`) — aucun paiement
+  en ligne tant que le feu vert Stripe n'est pas donné.
 
 ## Tests
 
 ```bash
-.venv/bin/python tests/test_api_v6.py    # login + dashboard + croisement avec la base SQLite
+.venv/bin/python tests/test_api_v6.py      # login démo + dashboard + croisement SQLite (Agentia)
+.venv/bin/python tests/test_api_audits.py  # ProdIA : audits, history, POST réel, sécurité 403, non-régression
 ```
 
 Vérifié en conditions réelles (navigateur) : login démo, 4 graphiques rendus avec les
 données de la base, filtre 7/30/90 j, 0 erreur console, rate-limit 5→429,
-non-régression SkillVault.
+non-régression SkillVault + ProdIA. Pour ProdIA : outil connecté → 15 questions →
+« Enregistrer dans mon espace » → POST réel → courbe d'évolution mise à jour
+(vérifié en navigateur, données croisées avec SQLite).

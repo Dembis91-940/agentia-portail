@@ -6,6 +6,7 @@ durcissement sécurité (SECRET_KEY env, CORS restreint, anti brute-force login)
 Chaque business = son branding, ses modules, ses données. Zéro simulateur.
 """
 import os
+import json
 import secrets
 import sqlite3
 import time
@@ -161,6 +162,23 @@ class Purchase(Base):
     date = Column(String, default="")
     skills = Column(Text, default="[]")           # snapshot des skills achetés
 
+class AuditSnapshot(Base):
+    """Un audit ProdIA enregistré : score /100, gains €, coût, ROI, plan 30-60-90,
+    à une date donnée (base du suivi mensuel — offre Pro). Multi-sites : site_name."""
+    __tablename__ = "audit_snapshots"
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True)
+    site_name = Column(String, default="Site principal")
+    date = Column(Date, default=date.today, index=True)
+    score_global = Column(Integer, default=0)
+    score_axes = Column(Text, default="{}")               # JSON {"usage": 55, "frequence": 66, ...}
+    gains_annuels_euros = Column(Float, default=0.0)
+    cout_outils_annuel = Column(Float, default=0.0)
+    roi = Column(Float, default=0.0)
+    plan_action = Column(Text, default="{}")              # JSON plan 30-60-90
+    formule = Column(String, default="")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
 Base.metadata.create_all(engine)
 
 # ---------------------------------------------------------------------------
@@ -273,10 +291,61 @@ def _seed_demo(db: Session):
                                        source="seed"))
     db.commit()
 
+PRODIA_COLOR = "#d4a017"
+PRODIA_DEMO_EMAIL = "sophie@atelier-dupont.fr"
+PRODIA_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD", "client1234")
+PRODIA_DEMO_FULL_NAME = "Sophie Dupont"
+PRODIA_DEMO_COMPANY = "Atelier Dupont"
+
+def _seed_prodia(db: Session):
+    """Business ProdIA (audits, or #d4a017) + client démo avec 2 audits réels
+    à des dates différentes → la courbe d'évolution affiche de vraies données.
+    Idempotent : business par slug, user par email, audits seulement si aucun."""
+    biz = db.query(Business).filter(Business.slug == "prodia").first()
+    if not biz:
+        biz = Business(slug="prodia", name="ProdIA", color=PRODIA_COLOR,
+                       modules="audits,invoices",
+                       description="Audit de productivité IA — score 0-100, gains €, ROI, plan 30-60-90.")
+        db.add(biz)
+        db.commit()
+    if os.environ.get("PORTAIL_SEED_DEMO", "1") != "1":
+        return
+    user = db.query(User).filter(User.email == PRODIA_DEMO_EMAIL).first()
+    if not user:
+        user = User(email=PRODIA_DEMO_EMAIL, hashed_password=password_hash.hash(PRODIA_DEMO_PASSWORD),
+                    full_name=PRODIA_DEMO_FULL_NAME, company=PRODIA_DEMO_COMPANY, business_id=biz.id)
+        db.add(user)
+        db.flush()
+        db.commit()
+    profil = db.query(ClientProfile).filter(ClientProfile.user_id == user.id).first()
+    if not profil:
+        db.add(ClientProfile(user_id=user.id, statut="abonne", plan="Pro", montant_mensuel=39.0))
+        db.commit()
+    elif profil.plan != "Pro":
+        profil.statut, profil.plan, profil.montant_mensuel = "abonne", "Pro", 39.0
+        db.commit()
+    if db.query(AuditSnapshot).filter(AuditSnapshot.user_id == user.id).first():
+        return  # audits déjà seedés
+
+    today = date.today()
+    prev = today - timedelta(days=30)
+    db.add(AuditSnapshot(user_id=user.id, site_name="Atelier Dupont", date=prev, score_global=54,
+                         score_axes='{"usage":55,"frequence":42,"gain":60,"cout":48,"adoption":33}',
+                         gains_annuels_euros=8960.0, cout_outils_annuel=1440.0, roi=6.2,
+                         plan_action='{"30j":["Cartographier les services IA payés","Désigner 2 tâches répétitives à confier à l\u2019IA"],"60j":["Étendre l\u2019IA à 2 nouvelles tâches récurrentes","Mettre en place un suivi simple du temps gagné"],"90j":["Consolider les gains par service","Fixer un objectif trimestriel de temps gagné"]}',
+                         formule="Pro"))
+    db.add(AuditSnapshot(user_id=user.id, site_name="Atelier Dupont", date=today, score_global=71,
+                         score_axes='{"usage":78,"frequence":65,"gain":80,"cout":62,"adoption":55}',
+                         gains_annuels_euros=14300.0, cout_outils_annuel=1560.0, roi=9.2,
+                         plan_action='{"30j":["Vérifier qu\u2019aucune tâche répétitive ne passe à côté de l\u2019IA","Organiser un atelier mensuel d\u2019une heure"],"60j":["Doubler la fréquence des usages les plus rentables","Chiffrer le gain annuel si la fréquence doublait"],"90j":["Transformer le référent IA en mission officielle","Créer un comité IA trimestriel"]}',
+                         formule="Pro"))
+    db.commit()
+
 def seed_if_needed():
     db = SessionLocal()
     try:
         _seed_demo(db)
+        _seed_prodia(db)
     finally:
         db.close()
 
@@ -362,6 +431,31 @@ class DashboardOut(BaseModel):
     purchases: list
     stats: dict
     charts: dict
+    audits: list = []
+    audits_history: dict = {}
+
+class AuditIn(BaseModel):
+    site_name: str = "Site principal"
+    date: Optional[str] = None                    # YYYY-MM-DD (défaut : aujourd'hui)
+    score_global: int
+    score_axes: dict = {}
+    gains_annuels_euros: float = 0.0
+    cout_outils_annuel: float = 0.0
+    roi: Optional[float] = None
+    plan_action: dict = {}
+    formule: str = "Pro"
+
+class AuditOut(BaseModel):
+    id: int
+    site_name: str
+    date: str
+    score_global: int
+    score_axes: dict
+    gains_annuels_euros: float
+    cout_outils_annuel: float
+    roi: Optional[float]
+    plan_action: dict
+    formule: str
 
 # ---------------------------------------------------------------------------
 # App
@@ -389,8 +483,16 @@ from fastapi.staticfiles import StaticFiles
 
 FRONTEND = os.path.join(BASE_DIR, "index.html")
 ASSETS = os.path.join(BASE_DIR, "assets")
+PRODIA_DIR = os.path.join(BASE_DIR, "prodia")
 if os.path.isdir(ASSETS):
     app.mount("/assets", StaticFiles(directory=ASSETS), name="assets")
+if os.path.isdir(PRODIA_DIR):
+    app.mount("/audit-assets", StaticFiles(directory=PRODIA_DIR), name="audit-assets")
+
+@app.get("/audit", include_in_schema=False)
+def outil_audit():
+    """Outil d'audit ProdIA connecté (même origine que le portail → token JWT partagé)."""
+    return FileResponse(os.path.join(PRODIA_DIR, "outil-audit.html"))
 
 @app.get("/", include_in_schema=False)
 def portail():
@@ -519,6 +621,7 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
     modules = [m for m in (business.modules.split(",") if business and business.modules else []) if m]
     has_automations = "automations" in modules
     has_packs = "packs" in modules
+    has_audits = "audits" in modules
 
     total_heures = sum(a.heures_gagnees or 0 for a in automations) + (profil.temps_recupere_heures or 0 if profil else 0)
     live_count = sum(1 for a in automations if a.statut == "active")
@@ -536,6 +639,13 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
 
     charts = _build_charts(user, business, profil, automations, db) if has_automations else {}
 
+    audits = []
+    audits_history = {}
+    if has_audits:
+        audits = [_audit_to_dict(a) for a in db.query(AuditSnapshot).filter(AuditSnapshot.user_id == user.id)
+                  .order_by(AuditSnapshot.date.desc(), AuditSnapshot.id.desc()).all()]
+        audits_history = _audits_history(user.id, db)
+
     return DashboardOut(
         user=UserOut(id=user.id, email=user.email, full_name=user.full_name, company=user.company, is_admin=user.is_admin, business=business.slug if business else ""),
         business={"slug": business.slug, "name": business.name, "color": business.color, "modules": modules,
@@ -552,6 +662,8 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
         purchases=[{"id": p.id, "pack_name": p.pack_name, "montant": p.montant, "statut": p.statut, "date": p.date, "skills": p.skills} for p in purchases],
         stats=stats,
         charts=charts,
+        audits=audits,
+        audits_history=audits_history,
     )
 
 @app.post("/api/packs/{pack_id}/buy")
@@ -564,6 +676,94 @@ def buy_pack(pack_id: int, user: User = Depends(get_current_user), db: Session =
     db.add(purchase)
     db.commit()
     return {"ok": True, "purchase_id": purchase.id, "skills": pack.skills}
+
+# ---------------------------------------------------------------------------
+# ProdIA — Audits : suivi mensuel du score / gains / ROI (offre Pro)
+# ---------------------------------------------------------------------------
+def _audit_to_dict(a: AuditSnapshot) -> dict:
+    def _json(s, default):
+        try:
+            return json.loads(s) if s else default
+        except Exception:
+            return default
+    return {
+        "id": a.id,
+        "site_name": a.site_name or "Site principal",
+        "date": a.date.isoformat() if a.date else "",
+        "score_global": a.score_global or 0,
+        "score_axes": _json(a.score_axes, {}),
+        "gains_annuels_euros": round(a.gains_annuels_euros or 0.0, 2),
+        "cout_outils_annuel": round(a.cout_outils_annuel or 0.0, 2),
+        "roi": a.roi,
+        "plan_action": _json(a.plan_action, {}),
+        "formule": a.formule or "",
+    }
+
+def _audits_history(user_id: int, db: Session, site_name: Optional[str] = None) -> dict:
+    """Séries temporelles réelles : score /100, gains € annuels, ROI, par date d'audit."""
+    q = db.query(AuditSnapshot).filter(AuditSnapshot.user_id == user_id)
+    if site_name:
+        q = q.filter(AuditSnapshot.site_name == site_name)
+    audits = q.order_by(AuditSnapshot.date.asc(), AuditSnapshot.id.asc()).all()
+    sites = [r[0] for r in db.query(AuditSnapshot.site_name)
+             .filter(AuditSnapshot.user_id == user_id)
+             .distinct().order_by(AuditSnapshot.site_name).all()]
+    last = audits[-1] if audits else None
+    prev = audits[-2] if len(audits) >= 2 else None
+    return {
+        "audits": [_audit_to_dict(a) for a in audits],
+        "sites": sites,
+        "labels": [a.date.strftime("%d/%m/%Y") for a in audits],
+        "scores": [a.score_global or 0 for a in audits],
+        "gains": [round(a.gains_annuels_euros or 0.0, 2) for a in audits],
+        "rois": [a.roi for a in audits],
+        "delta_score": (last.score_global - prev.score_global) if last and prev else 0,
+        "delta_gains": round((last.gains_annuels_euros or 0.0) - (prev.gains_annuels_euros or 0.0), 2) if last and prev else 0.0,
+        "dernier": _audit_to_dict(last) if last else None,
+        "precedent": _audit_to_dict(prev) if prev else None,
+        "nb_audits": len(audits),
+    }
+
+@app.post("/api/audits", response_model=AuditOut, status_code=201)
+def create_audit(data: AuditIn, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Enregistre un audit ProdIA (depuis l'outil d'audit ou le portail). Données réelles."""
+    business = db.query(Business).filter(Business.id == user.business_id).first()
+    modules = (business.modules or "").split(",") if business else []
+    if "audits" not in modules:
+        raise HTTPException(403, "Votre espace ne dispose pas du module audits")
+    try:
+        audit_date = date.fromisoformat(data.date) if data.date else date.today()
+    except ValueError:
+        raise HTTPException(422, "Date invalide (format attendu : YYYY-MM-DD)")
+    snap = AuditSnapshot(
+        user_id=user.id,
+        site_name=(data.site_name or "Site principal").strip() or "Site principal",
+        date=audit_date,
+        score_global=max(0, min(100, int(data.score_global))),
+        score_axes=json.dumps(data.score_axes, ensure_ascii=False),
+        gains_annuels_euros=float(data.gains_annuels_euros or 0.0),
+        cout_outils_annuel=float(data.cout_outils_annuel or 0.0),
+        roi=float(data.roi) if data.roi is not None else None,
+        plan_action=json.dumps(data.plan_action, ensure_ascii=False),
+        formule=data.formule or "Pro",
+    )
+    db.add(snap)
+    db.commit()
+    db.refresh(snap)
+    return _audit_to_dict(snap)
+
+@app.get("/api/audits", response_model=list)
+def list_audits(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Liste des audits du client (du plus récent au plus ancien)."""
+    audits = db.query(AuditSnapshot).filter(AuditSnapshot.user_id == user.id) \
+        .order_by(AuditSnapshot.date.desc(), AuditSnapshot.id.desc()).all()
+    return [_audit_to_dict(a) for a in audits]
+
+@app.get("/api/audits/history", response_model=dict)
+def audits_history(user: User = Depends(get_current_user), db: Session = Depends(get_db),
+                   site: Optional[str] = None):
+    """Séries temporelles pour les graphiques Évolution (score, gains €, ROI)."""
+    return _audits_history(user.id, db, site_name=site)
 
 if __name__ == "__main__":
     import uvicorn

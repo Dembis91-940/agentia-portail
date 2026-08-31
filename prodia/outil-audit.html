@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Audit de productivité IA — ProdIA (15 questions, score 0-100, gains en €)</title>
+<meta name="description" content="Audit gratuit de productivité IA en 15 questions et 5 axes : score de 0 à 100, gains annuels estimés en euros (35 €/h), verdict et plan d'action 30-60-90 jours. Sans inscription.">
+<meta name="theme-color" content="#0f3d4d">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f3d4d'/%3E%3Ctext x='32' y='44' font-family='Georgia,serif' font-size='34' font-weight='700' fill='%23d4a017' text-anchor='middle'%3EP%3C/text%3E%3C/svg%3E">
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ProdIA">
+<meta property="og:title" content="Audit de productivité IA — ProdIA">
+<meta property="og:description" content="15 questions, 5 axes, 10 minutes : score 0-100, gains annuels en euros (35 €/h), verdict et plan d'action. Gratuit, sans inscription.">
+<meta property="og:url" content="https://dembis91-940.github.io/audit-prod-ia/outil-audit.html">
+<meta property="og:locale" content="fr_FR">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Audit de productivité IA — ProdIA">
+<meta name="twitter:description" content="15 questions, 5 axes : score 0-100, gains annuels en euros, verdict et plan d'action. Gratuit, sans inscription.">
+<!-- JSON-LD -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ProdIA — Audit de productivité IA",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": "fr",
+  "description": "Audit gratuit de productivité IA : 15 questions sur 5 axes, score de 0 à 100, gains annuels estimés en euros (taux horaire 35 €), verdict et plan d'action 30-60-90 jours.",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR", "description": "Outil d'audit en ligne gratuit et illimité"}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --petrole:#0f3d4d;
+  --petrole-fonce:#0a2c38;
+  --petrole-nuit:#061d26;
+  --or:#d4a017;
+  --or-clair:#e7c766;
+  --or-fonce:#a87c0d;
+  --ivoire:#faf7f0;
+  --ivoire-fonce:#f2ecdf;
+  --blanc:#fffdf8;
+  --encre:#16272e;
+  --texte:#35464d;
+  --discret:#6b7a80;
+  --filet-or:rgba(212,160,23,.45);
+  --filet-or-fort:rgba(212,160,23,.7);
+  --filet-petrole:rgba(15,61,77,.16);
+  --ombre-or:rgba(212,160,23,.3);
+  --vert:#1e7f4f;
+  --orange:#c77700;
+  --rouge:#b3261e;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--ivoire);color:var(--texte);line-height:1.65;font-size:16.5px;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--or-fonce),var(--or-clair),var(--or-fonce));z-index:80}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif;color:var(--encre);font-weight:600;line-height:1.18}
+.mono{font-family:'JetBrains Mono',monospace}
+a{color:inherit}
+.container{max-width:1080px;margin:0 auto;padding:0 28px}
+
+/* ---------- En-tête ---------- */
+header{position:sticky;top:4px;z-index:60;background:rgba(250,247,240,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--filet-petrole)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:72px;gap:20px}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.mono-mark{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',Georgia,serif;font-weight:700;font-size:23px;color:var(--or);background:var(--petrole);border:1.5px solid var(--or);border-radius:8px;box-shadow:inset 0 0 0 3px var(--petrole), inset 0 0 0 4px var(--filet-or-fort)}
+.logo-name{font-family:'Fraunces',Georgia,serif;font-size:22px;font-weight:600;color:var(--encre);letter-spacing:.5px}
+.logo-name span{color:var(--or-fonce)}
+.logo-tag{display:block;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--discret);text-transform:uppercase;margin-top:1px}
+.nav-cta{display:flex;align-items:center;gap:16px}
+.nav-cta a{text-decoration:none;font-size:14.5px;font-weight:500;color:var(--texte)}
+.nav-cta a:hover{color:var(--or-fonce)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:13px 24px;border-radius:8px;font-weight:600;font-size:15px;cursor:pointer;transition:transform .2s,box-shadow .2s,background .2s;border:none;text-decoration:none;font-family:'Inter',sans-serif;line-height:1.2;text-align:center}
+.btn:active{transform:translateY(1px)}
+.btn-or{background:linear-gradient(135deg,var(--or-clair),var(--or) 45%,var(--or-fonce));color:#221a02;box-shadow:0 10px 26px var(--ombre-or)}
+.btn-or:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(212,160,23,.42)}
+.btn-petrole{background:var(--petrole);color:var(--ivoire);box-shadow:0 10px 24px rgba(15,61,77,.25)}
+.btn-petrole:hover{transform:translateY(-2px)}
+.btn-outline{border:1.5px solid var(--or);color:var(--or-fonce);background:transparent}
+.btn-outline:hover{background:rgba(212,160,23,.08)}
+.btn-gold-outline{border:1.5px solid var(--or);color:var(--or-fonce);background:transparent}
+.btn-gold-outline:hover{background:rgba(212,160,23,.08)}
+.btn-lg{padding:16px 30px;font-size:16px}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none!important}
+
+/* ---------- Hero outil ---------- */
+.hero{position:relative;background:radial-gradient(900px 480px at 85% -10%,rgba(212,160,23,.16),transparent 60%),linear-gradient(158deg,var(--petrole) 0%,var(--petrole-fonce) 55%,var(--petrole-nuit) 100%);color:var(--ivoire);padding:96px 0 88px;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(212,160,23,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(212,160,23,.06) 1px,transparent 1px);background-size:46px 46px;pointer-events:none}
+.hero-inner{position:relative;max-width:820px;margin:0 auto;text-align:center}
+.kicker{display:inline-flex;align-items:center;gap:12px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--or-clair);font-weight:500}
+.kicker::before,.kicker::after{content:'';width:34px;height:1.5px;background:linear-gradient(90deg,transparent,var(--or))}
+.kicker::after{background:linear-gradient(90deg,var(--or),transparent)}
+.hero h1{font-size:clamp(34px,4.4vw,52px);font-weight:600;color:var(--ivoire);letter-spacing:-.4px;margin-top:22px}
+.hero h1 .accent{font-style:italic;font-weight:500;background:linear-gradient(100deg,var(--or-clair),var(--or) 55%,var(--or-fonce));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero-sub{margin:20px auto 0;font-size:17.5px;line-height:1.7;color:rgba(250,247,240,.85);max-width:640px}
+.hero-sub strong{color:var(--or-clair);font-weight:600}
+.hero-chips{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:28px}
+.chip{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(250,247,240,.85);border:1px solid rgba(212,160,23,.45);border-radius:999px;padding:8px 15px;background:rgba(255,255,255,.04)}
+.chip svg{flex:none}
+
+/* ---------- Axes (bandeau) ---------- */
+.axes-strip{background:var(--ivoire-fonce);border-bottom:1px solid var(--filet-petrole);padding:34px 0}
+.axes-strip .container{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.axis-chip{text-align:center;padding:16px 10px;background:var(--blanc);border:1px solid var(--filet-petrole);border-radius:12px;min-width:0}
+.axis-chip .n{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1.6px;text-transform:uppercase;color:var(--or-fonce);font-weight:500}
+.axis-chip b{display:block;font-family:'Fraunces',Georgia,serif;font-size:15px;color:var(--encre);font-weight:600;margin-top:5px}
+
+/* ---------- Zone outil ---------- */
+.tool-zone{padding:56px 0 90px;background:var(--ivoire)}
+.intro-card{max-width:760px;margin:0 auto;background:var(--blanc);border:1px solid var(--filet-petrole);border-radius:18px;padding:46px 44px;text-align:center}
+.intro-card h2{font-size:clamp(26px,3vw,34px)}
+.intro-card h2 em{font-style:italic;color:var(--or-fonce);font-weight:500}
+.intro-card .sub{color:var(--discret);font-size:15.5px;margin-top:14px;line-height:1.7}
+.intro-meta{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 26px;margin-top:22px;font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--texte)}
+.intro-meta span{display:inline-flex;align-items:center;gap:7px}
+.intro-meta svg{flex:none}
+.field{margin:26px auto 0;max-width:420px;text-align:left}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--encre);margin-bottom:7px}
+.field input{width:100%;border:1.5px solid var(--filet-petrole);background:var(--ivoire);border-radius:9px;padding:12px 14px;font-size:15px;color:var(--encre);font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
+.field input:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(212,160,23,.18)}
+.intro-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin-top:26px}
+.resume-box{margin:22px auto 0;max-width:480px;background:var(--ivoire-fonce);border:1px solid var(--filet-or-fort);border-radius:12px;padding:18px 20px;font-size:14.5px;color:var(--encre);display:none}
+.resume-box strong{color:var(--or-fonce)}
+.resume-actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.resume-actions .btn{padding:9px 16px;font-size:13.5px}
+
+/* Progression sticky */
+.progress-wrap{position:sticky;top:76px;z-index:55;background:rgba(250,247,240,.95);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--filet-petrole);padding:12px 0;display:none}
+.progress-inner{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.progress-count{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--encre);white-space:nowrap}
+.progress-count b{color:var(--or-fonce)}
+.progress-track{flex:1;min-width:140px;height:8px;border-radius:99px;background:var(--ivoire-fonce);overflow:hidden;border:1px solid var(--filet-petrole)}
+.progress-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--or-fonce),var(--or-clair));transition:width .35s ease;width:0}
+.progress-score{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--encre);white-space:nowrap}
+.progress-score b{color:var(--or-fonce)}
+
+/* Quiz */
+.quiz{display:none;max-width:820px;margin:0 auto}
+.axis-block{margin-bottom:44px}
+.axis-head{display:flex;align-items:baseline;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:1.5px solid var(--filet-or)}
+.axis-head .num{font-family:'Fraunces',Georgia,serif;font-style:italic;font-size:34px;font-weight:500;background:linear-gradient(135deg,var(--or-clair),var(--or-fonce));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.axis-head h3{font-size:23px}
+.axis-head .hint{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--discret)}
+.q-card{background:var(--blanc);border:1px solid var(--filet-petrole);border-radius:14px;padding:26px 28px;margin-bottom:18px;transition:border-color .25s,box-shadow .25s;min-width:0}
+.q-card.answered{border-color:var(--filet-or-fort)}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--discret);font-weight:500}
+.q-text{font-family:'Fraunces',Georgia,serif;font-size:18.5px;font-weight:600;color:var(--encre);margin:9px 0 16px;line-height:1.4}
+.options{display:grid;gap:9px}
+.option{display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;background:var(--ivoire);border:1.5px solid var(--filet-petrole);border-radius:10px;padding:13px 15px;font-size:14.5px;color:var(--texte);cursor:pointer;font-family:'Inter',sans-serif;line-height:1.5;transition:border-color .18s,background .18s;min-width:0}
+.option:hover{border-color:var(--or)}
+.option .dot{flex:none;width:19px;height:19px;border-radius:50%;border:2px solid var(--discret);margin-top:2px;display:flex;align-items:center;justify-content:center;transition:border-color .18s,background .18s}
+.option .dot::after{content:'';width:9px;height:9px;border-radius:50%;background:var(--petrole);transform:scale(0);transition:transform .18s}
+.option.selected{background:rgba(212,160,23,.1);border-color:var(--or)}
+.option.selected .dot{border-color:var(--or-fonce)}
+.option.selected .dot::after{transform:scale(1)}
+
+/* Résultats */
+.results{display:none;max-width:900px;margin:0 auto}
+.res-card{background:var(--blanc);border:1px solid var(--filet-petrole);border-radius:18px;padding:40px 42px;box-shadow:0 20px 50px rgba(15,61,77,.08)}
+.res-top{display:flex;align-items:center;gap:32px;flex-wrap:wrap}
+.res-ring{position:relative;width:170px;height:170px;flex:none;margin:0 auto}
+.res-ring svg{width:170px;height:170px;transform:rotate(-90deg)}
+.res-ring .track{fill:none;stroke:var(--ivoire-fonce);stroke-width:12}
+.res-ring .val-circle{fill:none;stroke:url(#goldGrad);stroke-width:12;stroke-linecap:round;transition:stroke-dashoffset 1s ease}
+.res-ring .val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.res-ring .val b{font-family:'Fraunces',Georgia,serif;font-size:46px;color:var(--encre);line-height:1}
+.res-ring .val span{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--discret);margin-top:5px}
+.res-info{flex:1;min-width:250px}
+.res-info .lvl{display:inline-flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:1.6px;text-transform:uppercase;font-weight:700;border-radius:999px;padding:6px 14px}
+.res-info h3{font-size:26px;margin:12px 0 10px}
+.res-info p{font-size:15px;color:var(--texte);line-height:1.75}
+.res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:30px}
+.res-stat{background:var(--ivoire);border:1px solid var(--filet-petrole);border-radius:12px;padding:20px 18px;text-align:center;min-width:0}
+.res-stat .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--discret)}
+.res-stat .num{font-family:'Fraunces',Georgia,serif;font-size:28px;color:var(--petrole);margin-top:7px;font-weight:600}
+.res-stat .num.gold{color:var(--or-fonce)}
+.res-stat .sub{font-size:12px;color:var(--discret);margin-top:5px}
+.res-axes{margin-top:30px}
+.res-axes h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--discret);margin-bottom:16px}
+.res-axis{display:grid;grid-template-columns:150px 1fr 42px;align-items:center;gap:14px;margin-bottom:12px;min-width:0}
+.res-axis label{font-size:13.5px;font-weight:600;color:var(--encre)}
+.res-axis .track{height:9px;border-radius:99px;background:var(--ivoire-fonce);overflow:hidden;border:1px solid var(--filet-petrole)}
+.res-axis .fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--or-fonce),var(--or-clair));transition:width .5s ease}
+.res-axis b{font-family:'JetBrains Mono',monospace;font-size:12.5px;color:var(--or-fonce);text-align:right}
+.plan-block{margin-top:34px}
+.plan-block h4{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11.5px;letter-spacing:2px;text-transform:uppercase;color:var(--petrole);margin-bottom:16px}
+.plan-item{display:flex;gap:14px;background:var(--ivoire);border:1px solid var(--filet-petrole);border-left:3px solid var(--or);border-radius:10px;padding:14px 16px;margin-bottom:10px;font-size:14.5px;line-height:1.6;min-width:0}
+.plan-item .tag{flex:none;font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--or-fonce);font-weight:700;padding-top:2px}
+.res-actions{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;justify-content:center}
+.res-actions .btn{min-width:0}
+.res-note{margin-top:22px;text-align:center;font-size:12.5px;color:var(--discret)}
+.methode{margin-top:34px;background:var(--ivoire-fonce);border:1px dashed var(--filet-or-fort);border-radius:12px;padding:20px 22px;font-size:13.5px;color:var(--texte);line-height:1.8}
+.methode b{color:var(--encre)}
+
+/* Rapport par email */
+.report-form{max-width:520px;margin:26px auto 0;background:var(--ivoire-fonce);border:1px solid var(--filet-or-fort);border-radius:14px;padding:26px 26px 22px;display:none}
+.report-form h4{font-size:19px;margin-bottom:6px}
+.report-form .sub{font-size:13.5px;color:var(--discret);margin-bottom:18px}
+.report-form .row{display:flex;flex-direction:column;gap:10px}
+.report-form input{width:100%;border:1.5px solid var(--filet-petrole);background:var(--blanc);border-radius:9px;padding:11px 13px;font-size:14.5px;color:var(--encre);font-family:'Inter',sans-serif;outline:none;min-width:0}
+.report-form input:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(212,160,23,.18)}
+.report-err{display:none;background:#fdecea;border:1px solid #f0b4ac;color:#8c2b22;border-radius:9px;padding:11px 13px;font-size:13.5px;margin-top:12px}
+.report-err.show{display:block}
+.report-ok{display:none;background:#e8f3ec;border:1px solid #a8cfb8;color:#1e5c3c;border-radius:9px;padding:11px 13px;font-size:13.5px;margin-top:12px}
+.report-ok.show{display:block}
+.save-box{max-width:520px;margin:26px auto 0;background:linear-gradient(135deg,var(--ivoire-fonce),#fff);border:1.5px solid var(--or);border-radius:14px;padding:26px 26px 22px;box-shadow:0 14px 40px var(--ombre-or)}
+.save-box .save-inner b{font-size:16px;display:block;margin-bottom:6px}
+.save-box .sub{font-size:13.5px;color:var(--discret);margin-bottom:16px}
+.save-box .row{display:flex;flex-direction:column;gap:10px}
+.save-box input{width:100%;border:1.5px solid var(--filet-petrole);background:var(--blanc);border-radius:9px;padding:11px 13px;font-size:14.5px;color:var(--encre);font-family:'Inter',sans-serif;outline:none;min-width:0}
+.save-box input:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(212,160,23,.18)}
+@media (min-width:560px){.save-box .row{flex-direction:row;align-items:center}.save-box .row input{flex:1}}
+
+/* ---------- Footer ---------- */
+footer{background:var(--petrole-nuit);color:rgba(250,247,240,.75);border-top:3px solid transparent;border-image:linear-gradient(90deg,var(--or-fonce),var(--or-clair),var(--or-fonce)) 1;padding:44px 0 36px}
+.foot-inner{display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between}
+.foot-brand{display:flex;align-items:center;gap:12px}
+.foot-brand .logo-name{color:var(--ivoire)}
+.foot-brand p{font-size:13.5px;color:rgba(250,247,240,.6);margin-top:4px}
+.foot-links{display:flex;flex-wrap:wrap;gap:10px 24px}
+.foot-links a{text-decoration:none;font-size:14px;color:rgba(250,247,240,.75)}
+.foot-links a:hover{color:var(--or-clair)}
+.foot-bottom{border-top:1px solid rgba(212,160,23,.22);margin-top:26px;padding-top:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;font-size:12.5px;color:rgba(250,247,240,.5)}
+
+/* ---------- Reveal ---------- */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+  html{scroll-behavior:auto}
+}
+
+/* ---------- Rapport d'impression ---------- */
+#print-head{display:none}
+#rapport-print{display:none}
+@media print{
+  body *{visibility:hidden}
+  #rapport-print,#rapport-print *{visibility:visible}
+  #rapport-print{display:block;position:absolute;left:0;top:0;width:100%;background:#fff;color:#16272e;padding:0}
+  body::before{display:none}
+  @page{margin:14mm}
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:900px){
+  .axes-strip .container{grid-template-columns:repeat(2,1fr)}
+  .res-stats{grid-template-columns:1fr}
+  .res-card{padding:30px 24px}
+  .progress-wrap{top:72px}
+}
+@media (max-width:560px){
+  .container{padding:0 18px}
+  .hero{padding:72px 0 64px}
+  .intro-card{padding:32px 22px}
+  .res-axis{grid-template-columns:110px 1fr 36px;gap:9px}
+  .res-axis label{font-size:12.5px}
+  .q-card{padding:20px 18px}
+  .nav-cta .btn{display:none}
+  .axes-strip .container{grid-template-columns:1fr 1fr}
+  .res-actions .btn{width:100%}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ EN-TÊTE ============ -->
+<header>
+  <div class="container nav">
+    <a class="logo" href="/" aria-label="ProdIA — retour à l'espace client">
+      <span class="mono-mark">P</span>
+      <span>
+        <span class="logo-name">Prod<span>IA</span></span>
+        <span class="logo-tag">Audit de productivité IA</span>
+      </span>
+    </a>
+    <div class="nav-cta">
+      <a href="/">← Retour à mon espace</a>
+      <a class="btn btn-or" href="/#offres-prodia">Voir les offres</a>
+    </div>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="container hero-inner">
+    <p class="kicker reveal">Outil gratuit · Sans inscription</p>
+    <h1 class="reveal" style="transition-delay:.08s">Quel est le <span class="accent">vrai retour sur investissement</span> de vos outils IA ?</h1>
+    <p class="hero-sub reveal" style="transition-delay:.16s">15 questions sur 5 axes, environ 10 minutes. Vous repartez avec un <strong>score sur 100</strong>, vos <strong>gains annuels estimés en euros</strong> (taux horaire 35 €) et un plan d'action 30-60-90 jours.</p>
+    <div class="hero-chips reveal" style="transition-delay:.24s">
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-clair)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Résultat immédiat</span>
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-clair)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Vos réponses restent sur votre navigateur</span>
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-clair)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Export PDF inclus</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ LES 5 AXES ============ -->
+<section class="axes-strip">
+  <div class="container">
+    <div class="axis-chip reveal"><span class="n">Axe 01</span><b>Usage réel</b></div>
+    <div class="axis-chip reveal" style="transition-delay:.05s"><span class="n">Axe 02</span><b>Fréquence</b></div>
+    <div class="axis-chip reveal" style="transition-delay:.1s"><span class="n">Axe 03</span><b>Gain estimé</b></div>
+    <div class="axis-chip reveal" style="transition-delay:.15s"><span class="n">Axe 04</span><b>Coût</b></div>
+    <div class="axis-chip reveal" style="transition-delay:.2s"><span class="n">Axe 05</span><b>Adoption</b></div>
+  </div>
+</section>
+
+<!-- ============ ZONE OUTIL ============ -->
+<main class="tool-zone">
+  <div class="container">
+
+    <!-- Écran d'accueil -->
+    <div class="intro-card reveal visible" id="introCard">
+      <h2>Prêt à mesurer ce que vos outils IA <em>vous rapportent ?</em></h2>
+      <p class="sub">Répondez spontanément : il n'y a ni bonne ni mauvaise réponse, seulement votre réalité. Le score et les gains sont calculés instantanément à partir de vos choix.</p>
+      <div class="intro-meta">
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-fonce)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>15 questions · 10 min</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-fonce)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Score de 0 à 100</span>
+        <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--or-fonce)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-5 3 3 5-7"/></svg>Gains en euros · 35 €/h</span>
+      </div>
+      <div class="field">
+        <label for="entreprise">Nom de votre entreprise <span style="color:var(--discret);font-weight:400">(optionnel — apparaît sur le rapport)</span></label>
+        <input type="text" id="entreprise" placeholder="Ex. : Atelier Martin & Fils" autocomplete="organization">
+      </div>
+      <div class="resume-box" id="resumeBox">
+        <div>Un audit est déjà en cours : <strong id="resumeCount">0 réponse sur 15</strong>.</div>
+        <div class="resume-actions">
+          <button class="btn btn-petrole" id="btnReprendre">Reprendre l'audit</button>
+          <button class="btn btn-outline" id="btnResetIntro">Recommencer à zéro</button>
+        </div>
+      </div>
+      <div class="intro-actions">
+        <button class="btn btn-or btn-lg" id="btnStart">Commencer l'audit
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Barre de progression -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="container progress-inner">
+        <span class="progress-count">Répondues : <b id="progCount">0</b>/15</span>
+        <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+        <span class="progress-score">Score actuel : <b id="progScore">—</b>/100</span>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="quiz" id="quiz"></div>
+
+    <!-- Résultats -->
+    <div class="results" id="results">
+      <div class="res-card reveal visible" id="resCard">
+        <div class="res-top">
+          <div class="res-ring">
+            <svg viewBox="0 0 170 170">
+              <defs>
+                <linearGradient id="goldGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#e7c766"/><stop offset="1" stop-color="#a87c0d"/>
+                </linearGradient>
+              </defs>
+              <circle class="track" cx="85" cy="85" r="71"/>
+              <circle class="val-circle" id="ringCircle" cx="85" cy="85" r="71" stroke-dasharray="446.1" stroke-dashoffset="446.1"/>
+            </svg>
+            <div class="val"><b id="resScore">0</b><span>SUR 100</span></div>
+          </div>
+          <div class="res-info">
+            <span class="lvl" id="resLvl">—</span>
+            <h3 id="resTitle">Votre verdict</h3>
+            <p id="resVerdict"></p>
+          </div>
+        </div>
+
+        <div class="res-stats">
+          <div class="res-stat">
+            <div class="lbl">Gains annuels estimés</div>
+            <div class="num gold" id="resGains">0 €</div>
+            <div class="sub" id="resGainsSub">0 h/semaine × 35 €/h</div>
+          </div>
+          <div class="res-stat">
+            <div class="lbl">Coût annuel des outils</div>
+            <div class="num" id="resCout">0 €</div>
+            <div class="sub">Estimé à partir de vos réponses</div>
+          </div>
+          <div class="res-stat">
+            <div class="lbl">Retour sur investissement</div>
+            <div class="num" id="resRoi">—</div>
+            <div class="sub">Gains annuels / coût annuel</div>
+          </div>
+        </div>
+
+        <div class="res-axes" id="resAxes"></div>
+        <div class="plan-block" id="planBlock"></div>
+
+        <div class="res-actions">
+          <button class="btn btn-petrole" id="btnPrint">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Exporter le rapport (PDF)
+          </button>
+          <button class="btn btn-gold-outline" id="btnEmail">Recevoir le rapport par email</button>
+          <button class="btn btn-outline" id="btnRestart">Recommencer l'audit</button>
+        </div>
+        <p class="res-note" id="resNote">Astuce : « Exporter le rapport » ouvre la boîte d'impression — choisissez « Enregistrer en PDF ».</p>
+
+        <!-- Enregistrement dans l'espace ProdIA (portail connecté) -->
+        <div class="save-box" id="saveBox" style="display:none">
+          <div class="save-inner">
+            <b>Vous êtes connecté à votre espace ProdIA</b>
+            <p class="sub">Enregistrez cet audit : il sera ajouté à votre suivi mensuel (score, gains, ROI) et comparé au mois précédent.</p>
+            <div class="row">
+              <input type="text" id="save-site" placeholder="Nom du site (ex. Atelier Dupont — Paris)">
+              <button class="btn btn-or" id="btnSave">Enregistrer dans mon espace</button>
+            </div>
+            <div class="report-err" id="save-err"></div>
+            <div class="report-ok" id="save-ok">Audit enregistré ! Votre courbe d'évolution est à jour.</div>
+          </div>
+        </div>
+
+        <div class="methode">
+          <b>Comment sont calculés vos gains ?</b><br>
+          Heures gagnées par semaine (déclarées) × nombre d'utilisateurs concernés × 44 semaines travaillées par an × 35 €/h. Estimation prudente : congés, jours fériés et temps partiel sont déjà déduits.
+        </div>
+
+        <!-- Formulaire envoi du rapport -->
+        <div class="report-form" id="reportForm">
+          <h4>Recevoir mon rapport par email</h4>
+          <p class="sub">Votre rapport (score, gains, plan d'action) vous sera envoyé sous 24 h ouvrées. Aucun spam, désinscription en un clic.</p>
+          <div class="row">
+            <input type="text" id="r-name" placeholder="Votre nom" autocomplete="name">
+            <input type="email" id="r-email" placeholder="Votre email professionnel" autocomplete="email">
+            <button class="btn btn-or" id="r-send">Recevoir mon rapport</button>
+          </div>
+          <div class="report-err" id="r-err"></div>
+          <div class="report-ok" id="r-ok">Merci ! Votre rapport est en route. Vous recevez un email de confirmation sous quelques minutes.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="container">
+    <div class="foot-inner">
+      <div class="foot-brand">
+        <span class="mono-mark">P</span>
+        <div>
+          <span class="logo-name">Prod<span>IA</span></span>
+          <p>Audit de productivité IA — cabinet des PME françaises.</p>
+        </div>
+      </div>
+      <div class="foot-links">
+        <a href="/">Accueil</a>
+        <a href="/#offres-prodia">Offres</a>
+        <a href="/#faq-prodia">FAQ</a>
+        <a href="mailto:prodia.audit@gmail.com">Contact</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 ProdIA — Tous droits réservés.</span>
+      <span class="mono">Audit · Mesure · Pilotage</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ RAPPORT D'IMPRESSION ============ -->
+<div id="rapport-print">
+  <div id="print-head">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:6px;">
+      <div style="width:38px;height:38px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-weight:700;font-size:20px;color:#d4a017;background:#0f3d4d;border:1.5px solid #d4a017;border-radius:7px;">P</div>
+      <div>
+        <div style="font-family:Georgia,serif;font-size:20px;font-weight:700;color:#0f3d4d;">Prod<span style="color:#a87c0d">IA</span></div>
+        <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:#6b7a80;font-family:monospace;">Audit de productivité IA</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:#6b7a80;margin-bottom:4px;" id="printEntreprise"></div>
+    <div style="font-size:12px;color:#6b7a80;" id="printDate"></div>
+  </div>
+  <h2 style="font-family:Georgia,serif;font-size:26px;color:#0f3d4d;margin:18px 0 4px;">Rapport d'audit de productivité IA</h2>
+  <div id="printScore" style="margin:14px 0;"></div>
+  <div id="printVerdict" style="font-size:13.5px;line-height:1.7;color:#35464d;margin-bottom:18px;"></div>
+  <h2 style="font-family:Georgia,serif;font-size:16px;color:#0f3d4d;margin:16px 0 8px;border-bottom:2px solid #d4a017;padding-bottom:4px;">Score par axe</h2>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px;" id="printAxes">
+    <thead><tr style="text-align:left;color:#6b7a80;font-size:11px;text-transform:uppercase;letter-spacing:1px;"><th style="padding:6px 8px;border-bottom:1px solid #d4a017;">Axe</th><th style="padding:6px 8px;border-bottom:1px solid #d4a017;">Score</th><th style="padding:6px 8px;border-bottom:1px solid #d4a017;">Niveau</th></tr></thead>
+    <tbody></tbody>
+  </table>
+  <h2 style="font-family:Georgia,serif;font-size:16px;color:#0f3d4d;margin:16px 0 8px;border-bottom:2px solid #d4a017;padding-bottom:4px;">Chiffres clés</h2>
+  <div id="printChiffres" style="font-size:13.5px;line-height:1.9;color:#35464d;margin-bottom:16px;"></div>
+  <h2 style="font-family:Georgia,serif;font-size:16px;color:#0f3d4d;margin:16px 0 8px;border-bottom:2px solid #d4a017;padding-bottom:4px;">Plan d'action 30-60-90 jours</h2>
+  <div id="printPlan" style="font-size:13.5px;line-height:1.7;color:#35464d;"></div>
+  <div style="margin-top:22px;font-size:11px;color:#6b7a80;border-top:1px solid #d4a017;padding-top:8px;line-height:1.6;">Rapport généré par l'outil ProdIA. Estimation prudente : taux horaire de référence 35 €, 44 semaines travaillées par an, heures déclarées par vos équipes. Ce rapport ne constitue pas un conseil financier.</div>
+</div>
+
+<script>
+/* ============================================================
+ * ProdIA — Audit de productivité IA (15 questions, 5 axes)
+ * Score 0-100 · gains annuels (heures × 35 €/h) · plan 30-60-90
+ * Persistance localStorage · export window.print · EmailJS
+ * ============================================================ */
+(function () {
+  'use strict';
+
+  var TAUX_HORAIRE = 35;        // € / heure (règle ProdIA)
+  var SEMAINES = 44;            // semaines travaillées par an
+  var LS_ANSWERS = 'prodia_answers';
+  var LS_ENTREPRISE = 'prodia_entreprise';
+
+  /* ---------- Données : 15 questions, 5 axes, 4 options 0/1/2/3 ---------- */
+  var QUESTIONS = [
+    /* Axe 1 — Usage réel */
+    { id: 'q1', axe: 'usage', q: 'Quels services IA votre entreprise paie-t-elle aujourd\u2019hui ?',
+      options: [
+        { t: 'Aucun service IA payant pour l\u2019instant', v: 0 },
+        { t: 'Un seul service (ex. : ChatGPT)', v: 1 },
+        { t: 'Deux à trois services (ChatGPT, Copilot, un outil métier…)', v: 2 },
+        { t: 'Quatre services ou plus (LLM, images, automations, métier…)', v: 3 }
+      ] },
+    { id: 'q2', axe: 'usage', q: 'Combien de collaborateurs utilisent ces outils au quotidien ?', meta: 'utilisateurs',
+      options: [
+        { t: 'Personne ou presque', v: 0, users: 1 },
+        { t: '1 à 2 personnes', v: 1, users: 2 },
+        { t: '3 à 9 personnes', v: 2, users: 6 },
+        { t: '10 personnes ou plus', v: 3, users: 15 }
+      ] },
+    { id: 'q3', axe: 'usage', q: 'Sur quelles tâches l\u2019IA est-elle réellement utilisée ?',
+      options: [
+        { t: 'Quasiment aucune tâche concrète', v: 0 },
+        { t: 'Des tâches ponctuelles, au cas par cas', v: 1 },
+        { t: 'Quelques tâches récurrentes (rédaction, emails, synthèses)', v: 2 },
+        { t: 'Des processus entiers, de bout en bout (production, support, devis…)', v: 3 }
+      ] },
+
+    /* Axe 2 — Fréquence */
+    { id: 'q4', axe: 'frequence', q: 'À quelle fréquence vos équipes utilisent-elles l\u2019IA ?',
+      options: [
+        { t: 'Jamais ou presque', v: 0 },
+        { t: 'Quelques fois par mois', v: 1 },
+        { t: 'Plusieurs fois par semaine', v: 2 },
+        { t: 'Tous les jours', v: 3 }
+      ] },
+    { id: 'q5', axe: 'frequence', q: 'L\u2019IA est-elle utilisée dans tous les services (commercial, administration, production) ou seulement par quelques initiés ?',
+      options: [
+        { t: 'Quelques initiés seulement', v: 0 },
+        { t: 'Un seul service', v: 1 },
+        { t: 'Plusieurs services', v: 2 },
+        { t: 'Tous les services concernés', v: 3 }
+      ] },
+    { id: 'q6', axe: 'frequence', q: 'Quand un collaborateur a une tâche répétitive, l\u2019IA fait-elle partie des réflexes ?',
+      options: [
+        { t: 'Jamais, on n\u2019y pense pas', v: 0 },
+        { t: 'Rarement', v: 1 },
+        { t: 'Souvent', v: 2 },
+        { t: 'Systématiquement, c\u2019est le premier réflexe', v: 3 }
+      ] },
+
+    /* Axe 3 — Gain estimé */
+    { id: 'q7', axe: 'gain', q: 'Combien d\u2019heures par semaine vos équipes estiment-elles gagner grâce à l\u2019IA ?', meta: 'heures',
+      options: [
+        { t: 'Moins d\u2019une heure', v: 0, heures: 0.5 },
+        { t: 'Environ 1 à 2 heures', v: 1, heures: 1.5 },
+        { t: '3 à 4 heures', v: 2, heures: 3.5 },
+        { t: '5 heures ou plus', v: 3, heures: 6 }
+      ] },
+    { id: 'q8', axe: 'gain', q: 'Sur quelle part des tâches récurrentes l\u2019IA est-elle réellement utilisée ?',
+      options: [
+        { t: 'Moins de 10 %', v: 0 },
+        { t: 'Environ 25 %', v: 1 },
+        { t: 'Environ 50 %', v: 2 },
+        { t: '75 % ou plus', v: 3 }
+      ] },
+    { id: 'q9', axe: 'gain', q: 'Le temps gagné est-il réinvesti dans des tâches à valeur (ventes, service client, production) ?',
+      options: [
+        { t: 'Non, le temps gagné se perd', v: 0 },
+        { t: 'Rarement', v: 1 },
+        { t: 'Souvent', v: 2 },
+        { t: 'Oui, systématiquement', v: 3 }
+      ] },
+
+    /* Axe 4 — Coût */
+    { id: 'q10', axe: 'cout', q: 'Connaissez-vous le coût mensuel total de vos abonnements IA ?',
+      options: [
+        { t: 'Non, aucune visibilité', v: 0 },
+        { t: 'Approximativement', v: 1 },
+        { t: 'Oui, au niveau du service concerné', v: 2 },
+        { t: 'Oui, consolidé au niveau de l\u2019entreprise', v: 3 }
+      ] },
+    { id: 'q11', axe: 'cout', q: 'Quel est votre budget mensuel approximatif pour les outils IA ?', meta: 'cout',
+      options: [
+        { t: 'Moins de 50 €', v: 0, cout: 25 },
+        { t: '50 à 200 €', v: 1, cout: 125 },
+        { t: '200 à 800 €', v: 2, cout: 500 },
+        { t: 'Plus de 800 €', v: 3, cout: 1200 }
+      ] },
+    { id: 'q12', axe: 'cout', q: 'Le coût des outils IA est-il revu régulièrement (arbitrage, résiliation des outils inutilisés) ?',
+      options: [
+        { t: 'Jamais', v: 0 },
+        { t: 'Une fois par an', v: 1 },
+        { t: 'Chaque trimestre', v: 2 },
+        { t: 'Chaque mois, avec des arbitrages documentés', v: 3 }
+      ] },
+
+    /* Axe 5 — Adoption */
+    { id: 'q13', axe: 'adoption', q: 'Les équipes ont-elles reçu une formation à l\u2019IA ?',
+      options: [
+        { t: 'Aucune formation', v: 0 },
+        { t: 'Une prise en main informelle', v: 1 },
+        { t: 'Des ateliers ponctuels', v: 2 },
+        { t: 'Un programme structuré et régulier', v: 3 }
+      ] },
+    { id: 'q14', axe: 'adoption', q: 'Existe-t-il des bonnes pratiques ou des consignes d\u2019usage partagées dans l\u2019entreprise ?',
+      options: [
+        { t: 'Non, chacun fait comme il veut', v: 0 },
+        { t: 'Quelques consignes orales', v: 1 },
+        { t: 'Un document partagé', v: 2 },
+        { t: 'Une base de connaissances vivante et à jour', v: 3 }
+      ] },
+    { id: 'q15', axe: 'adoption', q: 'Qui pilote l\u2019IA dans votre entreprise ?',
+      options: [
+        { t: 'Personne', v: 0 },
+        { t: 'Un collaborateur motivé, sans mission officielle', v: 1 },
+        { t: 'Un référent désigné', v: 2 },
+        { t: 'Un référent + un comité ou un budget dédié', v: 3 }
+      ] }
+  ];
+
+  var AXES = [
+    { key: 'usage', label: 'Usage réel' },
+    { key: 'frequence', label: 'Fréquence' },
+    { key: 'gain', label: 'Gain estimé' },
+    { key: 'cout', label: 'Coût' },
+    { key: 'adoption', label: 'Adoption' }
+  ];
+
+  /* ---------- Verdicts ---------- */
+  var VERDICTS = [
+    { min: 80, nom: 'IA optimisée', couleur: '#1e7f4f',
+      titre: 'Vos outils IA rapportent plus qu\u2019ils ne coûtent.',
+      texte: 'L\u2019usage est régulier, mesuré et piloté : vos outils IA sont devenus un vrai levier de productivité. Votre priorité : verrouiller ces gains — consolider la mesure du temps gagné, étendre les processus rentables et sécuriser le budget. C\u2019est le moment de passer à des objectifs trimestriels chiffrés, service par service.' },
+    { min: 65, nom: 'IA consolidée', couleur: '#d4a017',
+      titre: 'Vos outils IA paient, mais la mesure reste fragile.',
+      texte: 'L\u2019usage est réel et commence à rapporter, mais sans suivi régulier, les gains s\u2019effritent. Formalisez la mesure du temps gagné, arbitrez vos abonnements chaque trimestre et étendez l\u2019usage aux services encore à la marge. Votre prochain palier est à portée de 90 jours.' },
+    { min: 50, nom: 'IA sous-exploitée', couleur: '#c77700',
+      titre: 'Vous payez des outils qui ne rendent qu\u2019une fraction de leur potentiel.',
+      texte: 'L\u2019usage est irrégulier, le temps gagné n\u2019est ni mesuré ni réinvesti : chaque heure perdue vous coûte 35 €. Attaquez les axes les plus faibles en priorité — le potentiel de gains est immédiat et ne demande pas de nouveau budget, juste du pilotage.' },
+    { min: 0, nom: 'IA à risque', couleur: '#b3261e',
+      titre: 'Vos abonnements IA sont une dépense sans retour mesurable.',
+      texte: 'Peu d\u2019usage réel, aucune visibilité sur le coût ni sur le temps gagné : le risque n\u2019est pas de dépenser, c\u2019est de dépenser sans rien piloter. Un plan d\u2019action simple, commencé cette semaine, peut inverser la tendance en 90 jours — sans investissement supplémentaire.' }
+  ];
+
+  /* ---------- Plan d'action par axe et par palier ---------- */
+  var PLANS = {
+    usage: {
+      faible: [
+        'Cartographier les services IA payés : chaque abonnement, ses utilisateurs et son coût mensuel.',
+        'Désigner les 2 tâches répétitives (rédaction, comptes rendus, emails) à confier à l\u2019IA dès la semaine prochaine.',
+        'Organiser une démonstration de 30 minutes des outils payants devant toutes les équipes concernées.'
+      ],
+      moyen: [
+        'Étendre l\u2019IA à 2 nouvelles tâches récurrentes par service (devis, relances, synthèses de réunion).',
+        'Définir, pour chaque outil payant, la liste des 5 usages qui justifient son abonnement.',
+        'Planifier un point mensuel de 30 minutes sur l\u2019usage réel de chaque outil.'
+      ],
+      bon: [
+        'Identifier les processus de bout en bout (production, support, facturation) à automatiser en priorité.',
+        'Mesurer le nombre de tâches traitées par l\u2019IA, service par service, et le partager en réunion.',
+        'Expérimenter un nouvel outil IA sur un processus pilote, avec un objectif chiffré.'
+      ]
+    },
+    frequence: {
+      faible: [
+        'Instaurer un réflexe : chaque tâche répétitive commence par la question « l\u2019IA peut-elle le faire ? ».',
+        'Créer un canal d\u2019entraide IA (messagerie d\u2019équipe) où chacun partage ses usages gagnants.',
+        'Bloquer 3 créneaux hebdomadaires dédiés à l\u2019IA (ex. : lundi, mercredi, vendredi, 30 minutes).'
+      ],
+      moyen: [
+        'Doubler la fréquence des usages les plus rentables, ceux qui font gagner le plus d\u2019heures.',
+        'Étendre l\u2019usage quotidien à un service encore à la marge (commercial, administration…).',
+        'Instaurer un rituel hebdomadaire de partage d\u2019astuces IA en réunion d\u2019équipe.'
+      ],
+      bon: [
+        'Vérifier qu\u2019aucune tâche répétitive ne passe encore à côté de l\u2019IA (revue rapide des plannings).',
+        'Lancer un « défi usage » mensuel : chaque équipe teste une nouvelle utilisation de l\u2019IA.',
+        'Mesurer la fréquence d\u2019usage par outil et par service, et afficher les résultats en interne.'
+      ]
+    },
+    gain: {
+      faible: [
+        'Estimer, avec chaque équipe, le temps passé sur les 3 tâches les plus répétitives, en heures par semaine.',
+        'Choisir UNE tâche à automatiser en premier et mesurer le temps avant / après pendant 2 semaines.',
+        'Convertir le temps gagné en euros (taux horaire 35 €) pour objectiver la décision.'
+      ],
+      moyen: [
+        'Mettre en place un suivi simple du temps gagné : un tableau partagé, mis à jour chaque semaine.',
+        'Réinvestir le temps gagné dans des actions à valeur : relances commerciales, service client, production.',
+        'Chiffrer le gain annuel potentiel si la fréquence d\u2019usage doublait.'
+      ],
+      bon: [
+        'Consolider les gains par service et par outil dans un tableau de bord mensuel.',
+        'Fixer un objectif de temps gagné par trimestre, avec un responsable par service.',
+        'Revaloriser le taux horaire de référence selon le profil des équipes concernées (expertise, facturation client).'
+      ]
+    },
+    cout: {
+      faible: [
+        'Lister tous les abonnements IA en cours et leurs coûts mensuels, à partir des factures du dernier trimestre.',
+        'Identifier les outils payants inutilisés depuis plus de 30 jours et planifier leur résiliation.',
+        'Centraliser les factures IA dans un dossier partagé, avec un responsable unique.'
+      ],
+      moyen: [
+        'Réaliser un arbitrage trimestriel : couper, réduire ou étendre chaque abonnement.',
+        'Comparer les formules payées aux besoins réels : nombre de sièges, options inutilisées.',
+        'Suivre le coût IA en pourcentage du budget global de l\u2019entreprise.'
+      ],
+      bon: [
+        'Négocier les tarifs annuels des outils dont l\u2019usage est confirmé (remise, sièges mutualisés).',
+        'Documenter chaque arbitrage (couper / garder / développer) avec le gain en heures associé.',
+        'Intégrer le budget IA au prévisionnel annuel, avec un seuil d\u2019alerte par outil.'
+      ]
+    },
+    adoption: {
+      faible: [
+        'Former les 3 premiers collaborateurs volontaires : une demi-journée, en interne ou en ligne.',
+        'Rédiger une page « bonnes pratiques IA » de 10 lignes et la partager à toute l\u2019équipe.',
+        'Nommer un référent IA informel, premier interlocuteur pour les questions d\u2019usage.'
+      ],
+      moyen: [
+        'Organiser un atelier mensuel d\u2019une heure : un cas pratique par service, tiré du réel.',
+        'Documenter les 10 usages gagnants de l\u2019entreprise dans une base partagée et à jour.',
+        'Étendre la formation aux équipes pas encore formées (commercial, administration, production).'
+      ],
+      bon: [
+        'Transformer le rôle de référent IA en mission officielle : temps dédié, budget formation.',
+        'Créer un comité IA trimestriel : usages, gains mesurés, arbitrages d\u2019outils.',
+        'Formaliser une charte d\u2019usage IA (données sensibles, confidentialité, qualité) validée par la direction.'
+      ]
+    }
+  };
+
+  /* ---------- État ---------- */
+  var answers = {};
+  try { answers = JSON.parse(localStorage.getItem(LS_ANSWERS) || '{}'); } catch (e) { answers = {}; }
+
+  function sauvegarder() {
+    try { localStorage.setItem(LS_ANSWERS, JSON.stringify(answers)); } catch (e) {}
+  }
+  function scoreQ(v) { return v; }
+
+  function repondues() { return QUESTIONS.filter(function (q) { return answers[q.id] !== undefined; }).length; }
+
+  function scoreParAxe(axe) {
+    var pts = 0, max = 0;
+    QUESTIONS.forEach(function (q) {
+      if (q.axe !== axe) return;
+      max += 3;
+      if (answers[q.id] !== undefined) pts += answers[q.id];
+    });
+    return max ? Math.round(pts / max * 100) : 0;
+  }
+
+  function scoreGlobal() {
+    var pts = 0;
+    QUESTIONS.forEach(function (q) { if (answers[q.id] !== undefined) pts += answers[q.id]; });
+    return Math.round(pts / (QUESTIONS.length * 3) * 100);
+  }
+
+  /* ---------- Chiffres : gains & coût ---------- */
+  function valeurMeta(id, champ) {
+    var q = QUESTIONS.filter(function (x) { return x.id === id; })[0];
+    var v = answers[id];
+    if (v === undefined || !q) return 0;
+    for (var i = 0; i < q.options.length; i++) {
+      if (q.options[i].v === v && q.options[i][champ] !== undefined) return q.options[i][champ];
+    }
+    return 0;
+  }
+
+  function chiffres() {
+    var heures = valeurMeta('q7', 'heures');        // heures / semaine / personne
+    var users = valeurMeta('q2', 'users');          // nb d'utilisateurs concernés
+    var cout = valeurMeta('q11', 'cout');           // € / mois
+    var heuresSemaine = Math.round(heures * users * 10) / 10;
+    var gains = Math.round(heures * users * SEMAINES * TAUX_HORAIRE);
+    var coutAn = cout * 12;
+    var roi = coutAn > 0 ? (gains / coutAn) : null;
+    return { heures: heures, users: users, heuresSemaine: heuresSemaine, gains: gains, coutMois: cout, coutAn: coutAn, roi: roi };
+  }
+
+  function fmt(n) { return Math.round(n).toLocaleString('fr-FR'); }
+
+  function verdict() {
+    var s = scoreGlobal();
+    for (var i = 0; i < VERDICTS.length; i++) if (s >= VERDICTS[i].min) return VERDICTS[i];
+    return VERDICTS[VERDICTS.length - 1];
+  }
+
+  /* ---------- Rendu des questions ---------- */
+  var quizEl = document.getElementById('quiz');
+  var html = '';
+  AXES.forEach(function (axe, ai) {
+    html += '<section class="axis-block reveal">';
+    html += '<div class="axis-head"><span class="num">0' + (ai + 1) + '</span><h3>' + axe.label + '</h3><span class="hint">3 questions</span></div>';
+    QUESTIONS.forEach(function (q, qi) {
+      if (q.axe !== axe.key) return;
+      html += '<div class="q-card" id="card-' + q.id + '">';
+      html += '<div class="q-num">Question ' + (qi + 1) + ' / 15</div>';
+      html += '<div class="q-text">' + q.q + '</div>';
+      html += '<div class="options">';
+      q.options.forEach(function (o, oi) {
+        html += '<button type="button" class="option" data-q="' + q.id + '" data-v="' + o.v + '" aria-pressed="false">';
+        html += '<span class="dot"></span><span>' + o.t + '</span>';
+        html += '</button>';
+      });
+      html += '</div></div>';
+    });
+    html += '</section>';
+  });
+  quizEl.innerHTML = html;
+
+  /* ---------- Interactions ---------- */
+  var introCard = document.getElementById('introCard');
+  var progressWrap = document.getElementById('progressWrap');
+  var resultsEl = document.getElementById('results');
+  var btnStart = document.getElementById('btnStart');
+  var entField = document.getElementById('entreprise');
+  var resumeBox = document.getElementById('resumeBox');
+  var resumeCount = document.getElementById('resumeCount');
+
+  function majProgress() {
+    var n = repondues();
+    document.getElementById('progCount').textContent = n;
+    document.getElementById('progFill').style.width = (n / 15 * 100) + '%';
+    document.getElementById('progScore').textContent = n ? scoreGlobal() : '—';
+  }
+
+  function restaurerSelection() {
+    QUESTIONS.forEach(function (q) {
+      if (answers[q.id] === undefined) return;
+      var card = document.getElementById('card-' + q.id);
+      if (!card) return;
+      card.classList.add('answered');
+      card.querySelectorAll('.option').forEach(function (b) {
+        if (parseInt(b.getAttribute('data-v'), 10) === answers[q.id]) {
+          b.classList.add('selected');
+          b.setAttribute('aria-pressed', 'true');
+        }
+      });
+    });
+  }
+
+  quizEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('.option');
+    if (!btn) return;
+    var qid = btn.getAttribute('data-q');
+    var v = parseInt(btn.getAttribute('data-v'), 10);
+    var card = document.getElementById('card-' + qid);
+    card.querySelectorAll('.option').forEach(function (b) {
+      b.classList.remove('selected');
+      b.setAttribute('aria-pressed', 'false');
+    });
+    btn.classList.add('selected');
+    btn.setAttribute('aria-pressed', 'true');
+    card.classList.add('answered');
+    answers[qid] = v;
+    sauvegarder();
+    majProgress();
+    if (repondues() === QUESTIONS.length) afficherResultats(true);
+  });
+
+  function demarrer() {
+    var ent = entField.value.trim();
+    if (ent) { try { localStorage.setItem(LS_ENTREPRISE, ent); } catch (err) {} }
+    introCard.style.display = 'none';
+    progressWrap.style.display = 'block';
+    quizEl.style.display = 'block';
+    restaurerSelection();
+    majProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  btnStart.addEventListener('click', demarrer);
+
+  document.getElementById('btnReprendre').addEventListener('click', demarrer);
+  document.getElementById('btnResetIntro').addEventListener('click', function () {
+    if (!confirm('Recommencer à zéro ? Vos réponses actuelles seront effacées.')) return;
+    answers = {};
+    sauvegarder();
+    resumeBox.style.display = 'none';
+    restaurerSelection();
+  });
+
+  /* ---------- Reprise ---------- */
+  var nRep = repondues();
+  if (nRep > 0) {
+    resumeBox.style.display = 'block';
+    resumeCount.textContent = nRep + ' réponse' + (nRep > 1 ? 's' : '') + ' sur 15';
+    var entSaved = '';
+    try { entSaved = localStorage.getItem(LS_ENTREPRISE) || ''; } catch (e) {}
+    if (entSaved) entField.value = entSaved;
+  }
+
+  /* ---------- Résultats ---------- */
+  function tierAxe(score) { return score < 50 ? 'faible' : (score < 75 ? 'moyen' : 'bon'); }
+  function libelleTier(t) { return t === 'faible' ? 'À renforcer' : (t === 'moyen' ? 'À consolider' : 'À exceller'); }
+
+  function afficherResultats(avecDefilement) {
+    var s = scoreGlobal();
+    var v = verdict();
+    var c = chiffres();
+
+    document.getElementById('resScore').textContent = s;
+    var lvl = document.getElementById('resLvl');
+    lvl.textContent = v.nom;
+    lvl.style.color = v.couleur;
+    lvl.style.border = '1.5px solid ' + v.couleur;
+    lvl.style.background = v.couleur + '1a';
+    document.getElementById('resTitle').textContent = v.titre;
+    document.getElementById('resVerdict').textContent = v.texte;
+
+    document.getElementById('resGains').textContent = fmt(c.gains) + ' €';
+    document.getElementById('resGainsSub').textContent = '≈ ' + (c.heuresSemaine % 1 === 0 ? c.heuresSemaine : c.heuresSemaine.toLocaleString('fr-FR')) + ' h/semaine × ' + TAUX_HORAIRE + ' €/h × ' + SEMAINES + ' semaines';
+    document.getElementById('resCout').textContent = fmt(c.coutAn) + ' €';
+    document.getElementById('resRoi').textContent = c.roi === null ? '—' : '× ' + (Math.round(c.roi * 10) / 10).toLocaleString('fr-FR').replace(',', ',');
+
+    var ring = document.getElementById('ringCircle');
+    var circ = 2 * Math.PI * 71;
+    ring.style.strokeDasharray = circ;
+    requestAnimationFrame(function () {
+      ring.style.strokeDashoffset = circ * (1 - s / 100);
+    });
+
+    /* Axes */
+    var axesHtml = '<h4>Vos 5 axes</h4>';
+    AXES.forEach(function (axe) {
+      var sc = scoreParAxe(axe.key);
+      axesHtml += '<div class="res-axis"><label>' + axe.label + '</label><div class="track"><div class="fill" style="width:' + sc + '%"></div></div><b>' + sc + '</b></div>';
+    });
+    document.getElementById('resAxes').innerHTML = axesHtml;
+
+    /* Plan d'action 30-60-90 */
+    var faibles = [], moyens = [], bons = [];
+    AXES.forEach(function (axe) {
+      var sc = scoreParAxe(axe.key);
+      var tier = tierAxe(sc);
+      var bloc = tier === 'faible' ? faibles : (tier === 'moyen' ? moyens : bons);
+      bloc.push({ axe: axe, sc: sc, tier: tier });
+    });
+    var planHtml = '';
+    if (faibles.length) {
+      planHtml += '<div class="plan-block"><h4>⚑ Urgences — 30 jours</h4>';
+      faibles.forEach(function (it) {
+        PLANS[it.axe.key].faible.forEach(function (action) {
+          planHtml += '<div class="plan-item"><span class="tag">' + it.axe.label + '</span><span>' + action + '</span></div>';
+        });
+      });
+      planHtml += '</div>';
+    }
+    if (moyens.length) {
+      planHtml += '<div class="plan-block"><h4>→ Consolidation — 60 jours</h4>';
+      moyens.forEach(function (it) {
+        PLANS[it.axe.key].moyen.slice(0, 2).forEach(function (action) {
+          planHtml += '<div class="plan-item"><span class="tag">' + it.axe.label + '</span><span>' + action + '</span></div>';
+        });
+      });
+      planHtml += '</div>';
+    }
+    if (bons.length) {
+      planHtml += '<div class="plan-block"><h4>★ Excellence — 90 jours</h4>';
+      bons.forEach(function (it) {
+        PLANS[it.axe.key].bon.slice(0, 2).forEach(function (action) {
+          planHtml += '<div class="plan-item"><span class="tag">' + it.axe.label + '</span><span>' + action + '</span></div>';
+        });
+      });
+      planHtml += '</div>';
+    }
+    document.getElementById('planBlock').innerHTML = planHtml;
+
+    resultsEl.style.display = 'block';
+    if (avecDefilement) {
+      resultsEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  /* ---------- Plan d'action structuré (JSON pour le portail) ---------- */
+  function construirePlanJSON() {
+    var faibles = [], moyens = [], bons = [];
+    AXES.forEach(function (axe) {
+      var sc = scoreParAxe(axe.key);
+      var tier = tierAxe(sc);
+      var bloc = tier === 'faible' ? faibles : (tier === 'moyen' ? moyens : bons);
+      bloc.push(axe);
+    });
+    function items(axes, palette, tier, max) {
+      var out = [];
+      axes.forEach(function (axe) {
+        var bloc = (palette[axe.key] && palette[axe.key][tier]) || [];
+        bloc.slice(0, max).forEach(function (action) {
+          out.push({ axe: axe.label, action: action });
+        });
+      });
+      return out;
+    }
+    return {
+      "30j": items(faibles, PLANS, 'faible', 3),
+      "60j": items(moyens, PLANS, 'moyen', 2),
+      "90j": items(bons, PLANS, 'bon', 2)
+    };
+  }
+
+  /* ---------- Enregistrement dans l'espace ProdIA (portail connecté) ---------- */
+  function tokenPortail() {
+    try {
+      var t = localStorage.getItem('portail_token');
+      if (t) return t;
+    } catch (e) {}
+    var m = location.search.match(/[?&]token=([^&]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  var saveBox = document.getElementById('saveBox');
+  var saveSite = document.getElementById('save-site');
+  if (tokenPortail()) {
+    saveBox.style.display = 'block';
+    var ent = '';
+    try { ent = localStorage.getItem(LS_ENTREPRISE) || ''; } catch (e) {}
+    if (ent) saveSite.value = ent;
+  }
+
+  document.getElementById('btnSave').addEventListener('click', function () {
+    var err = document.getElementById('save-err');
+    var ok = document.getElementById('save-ok');
+    err.classList.remove('show');
+    ok.classList.remove('show');
+    var site = saveSite.value.trim();
+    if (!site) { err.textContent = 'Merci d\u2019indiquer le nom du site.'; err.classList.add('show'); return; }
+    var c = chiffres();
+    var btn = document.getElementById('btnSave');
+    btn.disabled = true;
+    btn.textContent = 'Enregistrement…';
+    var payload = {
+      site_name: site,
+      date: new Date().toISOString().slice(0, 10),
+      score_global: scoreGlobal(),
+      score_axes: (function () {
+        var o = {};
+        AXES.forEach(function (axe) { o[axe.key] = scoreParAxe(axe.key); });
+        return o;
+      })(),
+      gains_annuels_euros: c.gains,
+      cout_outils_annuel: c.coutAn,
+      roi: c.roi,
+      plan_action: construirePlanJSON(),
+      formule: 'Pro'
+    };
+    var apiBase = (window.PORTAIL_API || '').replace(/\/$/, '');
+    fetch((apiBase || '') + '/api/audits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + tokenPortail() },
+      body: JSON.stringify(payload)
+    }).then(function (r) {
+      if (!r.ok) return r.json().then(function (d) { throw new Error(d.detail || 'Erreur'); });
+      return r.json();
+    }).then(function () {
+      ok.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer dans mon espace';
+      btn.style.display = 'none';
+      saveSite.disabled = true;
+      setTimeout(function () {
+        var retour = (apiBase || '') + '/';
+        try { location.href = retour + '?biz=prodia'; } catch (e2) {}
+      }, 1600);
+    }).catch(function (e) {
+      err.textContent = 'Échec de l\u2019enregistrement : ' + e.message + '. Réessayez, ou connectez-vous depuis votre espace.';
+      err.classList.add('show');
+      btn.disabled = false;
+      btn.textContent = 'Enregistrer dans mon espace';
+    });
+  });
+
+  /* ---------- Export PDF (impression) ---------- */
+  function construireRapport() {
+    var s = scoreGlobal();
+    var v = verdict();
+    var c = chiffres();
+    var ent = '';
+    try { ent = localStorage.getItem(LS_ENTREPRISE) || ''; } catch (e) {}
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+
+    document.getElementById('printEntreprise').textContent = ent ? 'Entreprise : ' + ent : '';
+    document.getElementById('printDate').textContent = 'Rapport généré le ' + dateStr;
+
+    document.getElementById('printScore').innerHTML =
+      '<div style="display:flex;align-items:baseline;gap:14px;margin-bottom:4px;">' +
+      '<span style="font-family:Georgia,serif;font-size:52px;font-weight:700;color:' + v.couleur + ';">' + s + '<span style="font-size:20px;color:#6b7a80;">/100</span></span>' +
+      '<span style="font-family:monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;color:' + v.couleur + ';border:1.5px solid ' + v.couleur + ';border-radius:999px;padding:5px 12px;">' + v.nom + '</span>' +
+      '</div>' +
+      '<div style="font-family:Georgia,serif;font-size:17px;font-weight:600;color:#0f3d4d;margin-top:6px;">' + v.titre + '</div>';
+
+    document.getElementById('printVerdict').textContent = v.texte;
+
+    var tbody = document.querySelector('#printAxes tbody');
+    tbody.innerHTML = '';
+    AXES.forEach(function (axe) {
+      var sc = scoreParAxe(axe.key);
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td style="padding:7px 8px;border-bottom:1px solid #e5ddd0;">' + axe.label + '</td>' +
+        '<td style="padding:7px 8px;border-bottom:1px solid #e5ddd0;font-weight:700;">' + sc + ' / 100</td>' +
+        '<td style="padding:7px 8px;border-bottom:1px solid #e5ddd0;">' + libelleTier(tierAxe(sc)) + '</td>';
+      tbody.appendChild(tr);
+    });
+
+    document.getElementById('printChiffres').innerHTML =
+      '<div><strong>Gains annuels estimés :</strong> ' + fmt(c.gains) + ' €' +
+      ' <span style="color:#6b7a80;">(≈ ' + (c.heuresSemaine % 1 === 0 ? c.heuresSemaine : c.heuresSemaine.toLocaleString('fr-FR')) + ' h/semaine × ' + c.users + ' utilisateurs × ' + SEMAINES + ' semaines × ' + TAUX_HORAIRE + ' €/h)</span></div>' +
+      '<div><strong>Coût annuel des outils :</strong> ' + fmt(c.coutAn) + ' €</div>' +
+      '<div><strong>Retour sur investissement :</strong> ' + (c.roi === null ? 'non calculable' : '× ' + (Math.round(c.roi * 10) / 10).toLocaleString('fr-FR')) + '</div>';
+
+    var planHtml = '';
+    var faibles = [], moyens = [], bons = [];
+    AXES.forEach(function (axe) {
+      var sc = scoreParAxe(axe.key);
+      var tier = tierAxe(sc);
+      var bloc = tier === 'faible' ? faibles : (tier === 'moyen' ? moyens : bons);
+      bloc.push(axe);
+    });
+    if (faibles.length) {
+      planHtml += '<div style="margin-bottom:10px;"><strong style="color:#b3261e;">⚑ Urgences — 30 jours</strong></div>';
+      faibles.forEach(function (axe) {
+        PLANS[axe.key].faible.forEach(function (action) {
+          planHtml += '<div style="margin:3px 0 3px 14px;">• <strong>' + axe.label + ' :</strong> ' + action + '</div>';
+        });
+      });
+    }
+    if (moyens.length) {
+      planHtml += '<div style="margin:12px 0 6px;"><strong style="color:#a87c0d;">→ Consolidation — 60 jours</strong></div>';
+      moyens.forEach(function (axe) {
+        PLANS[axe.key].moyen.slice(0, 2).forEach(function (action) {
+          planHtml += '<div style="margin:3px 0 3px 14px;">• <strong>' + axe.label + ' :</strong> ' + action + '</div>';
+        });
+      });
+    }
+    if (bons.length) {
+      planHtml += '<div style="margin:12px 0 6px;"><strong style="color:#1e7f4f;">★ Excellence — 90 jours</strong></div>';
+      bons.forEach(function (axe) {
+        PLANS[axe.key].bon.slice(0, 2).forEach(function (action) {
+          planHtml += '<div style="margin:3px 0 3px 14px;">• <strong>' + axe.label + ' :</strong> ' + action + '</div>';
+        });
+      });
+    }
+    document.getElementById('printPlan').innerHTML = planHtml;
+  }
+
+  document.getElementById('btnPrint').addEventListener('click', function () {
+    construireRapport();
+    window.print();
+  });
+
+  /* ---------- Recommencer ---------- */
+  document.getElementById('btnRestart').addEventListener('click', function () {
+    if (!confirm('Recommencer l\u2019audit ? Vos réponses actuelles seront effacées.')) return;
+    answers = {};
+    sauvegarder();
+    try { localStorage.removeItem(LS_ENTREPRISE); } catch (e) {}
+    location.reload();
+  });
+
+  /* ---------- Recevoir le rapport par email (EmailJS réel) ---------- */
+  var EMAILJS = (window.CHATBOT_CONFIG && window.CHATBOT_CONFIG.emailjs) || {
+    serviceId: 'service_cy1ytdb',
+    templateId: 'template_xpo58cv',
+    publicKey: '8Pui4ZEqxW2jRVF7h'
+  };
+
+  function chargerEmailJS() {
+    return new Promise(function (resolve, reject) {
+      if (window.emailjs && typeof emailjs.send === 'function') return resolve();
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+      s.onload = function () {
+        try { emailjs.init({ publicKey: EMAILJS.publicKey }); } catch (e) {}
+        resolve();
+      };
+      s.onerror = function () { reject(new Error('SDK indisponible')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  document.getElementById('btnEmail').addEventListener('click', function () {
+    var f = document.getElementById('reportForm');
+    f.style.display = f.style.display === 'block' ? 'none' : 'block';
+    if (f.style.display === 'block') document.getElementById('r-name').focus();
+  });
+
+  document.getElementById('r-send').addEventListener('click', function () {
+    var err = document.getElementById('r-err');
+    var ok = document.getElementById('r-ok');
+    err.classList.remove('show');
+    ok.classList.remove('show');
+    var nom = document.getElementById('r-name').value.trim();
+    var email = document.getElementById('r-email').value.trim();
+    if (nom.length < 2) { err.textContent = 'Merci d\u2019indiquer votre nom.'; err.classList.add('show'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { err.textContent = 'Merci d\u2019indiquer un email valide.'; err.classList.add('show'); return; }
+    var btn = document.getElementById('r-send');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+    var c = chiffres();
+    var ent = '';
+    try { ent = localStorage.getItem(LS_ENTREPRISE) || ''; } catch (e) {}
+    var payload = {
+      site: 'ProdIA — Audit',
+      name: nom,
+      email: email,
+      question: 'Demande du rapport d\u2019audit ProdIA — Entreprise : ' + (ent || 'non renseignée') + ' — Score : ' + scoreGlobal() + '/100 — Gains annuels estimés : ' + fmt(c.gains) + ' €'
+    };
+    chargerEmailJS()
+      .then(function () { return emailjs.send(EMAILJS.serviceId, EMAILJS.templateId, payload); })
+      .then(function () {
+        ok.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Recevoir mon rapport';
+        document.getElementById('r-name').value = '';
+        document.getElementById('r-email').value = '';
+      })
+      .catch(function () {
+        err.textContent = 'L\u2019envoi a échoué. Merci de réessayer, ou écrivez-nous directement à prodia.audit@gmail.com.';
+        err.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Recevoir mon rapport';
+      });
+  });
+
+  /* ---------- Reveal ---------- */
+  var revealEls = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window)) {
+    revealEls.forEach(function (el) { el.classList.add('visible'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('visible'); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(function (el) { io.observe(el); });
+  }
+})();
+</script>
+
+<!-- Chatbot ProdIA -->
+<script src="/audit-assets/chatbot-config.js"></script>
+<script src="/audit-assets/chatbot.js"></script>
+</body>
+</html>
