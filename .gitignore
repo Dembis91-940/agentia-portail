@@ -1,0 +1,15 @@
+# Secrets — JAMAIS committés
+.env
+
+# Base de données locale (recréée par le seed au 1er lancement)
+*.db
+*.sqlite
+*.sqlite3
+
+# Environnement Python
+.venv/
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store

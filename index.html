@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portail Client — Agentia & SkillVault</title>
+<style>
+  /* ============ V5 : le portail VIT en permanence ============ */
+  :root {
+    --bg: #070b09;
+    --surface: rgba(17,26,22,0.85);
+    --surface2: #16211b;
+    --neon: #00ff88;          /* override par business (Agentia vert, SkillVault ambre) */
+    --neon-soft: rgba(0,255,136,0.14);
+    --text: #e8f5ee;
+    --muted: #9aa8a0;
+    --border: rgba(255,255,255,0.07);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* ---- grain animé (film) ---- */
+  .grain {
+    position: fixed; inset: -100px; z-index: 1; pointer-events: none; opacity: 0.05;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: grain-shift 0.6s steps(3) infinite;
+  }
+  @keyframes grain-shift {
+    0% { transform: translate(0,0); } 33% { transform: translate(-30px,20px); } 66% { transform: translate(25px,-15px); } 100% { transform: translate(0,0); }
+  }
+
+  /* ---- particules flottantes ---- */
+  .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+  .particle {
+    position: absolute; border-radius: 50%; background: var(--neon); opacity: 0;
+    animation: float-up linear infinite;
+  }
+  @keyframes float-up {
+    0% { transform: translateY(110vh) scale(0.4); opacity: 0; }
+    12% { opacity: 0.5; }
+    88% { opacity: 0.35; }
+    100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+  }
+
+  /* ---- halos pulsants ---- */
+  .halo {
+    position: fixed; border-radius: 50%; background: radial-gradient(circle, var(--neon-soft), transparent 70%);
+    filter: blur(60px); z-index: 0; pointer-events: none; animation: halo-pulse 7s ease-in-out infinite;
+  }
+  @keyframes halo-pulse { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.25); opacity: 0.9; } }
+
+  /* ---- curseur custom + traînée (V5) ---- */
+  .cursor-dot, .cursor-halo {
+    position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none; border-radius: 50%;
+  }
+  .cursor-dot { width: 8px; height: 8px; background: var(--neon); box-shadow: 0 0 12px var(--neon); }
+  .cursor-halo {
+    width: 42px; height: 42px; border: 1px solid var(--neon); opacity: 0.4;
+    transition: width 0.2s, height 0.2s;
+  }
+  .cursor-halo.hovering { width: 62px; height: 62px; opacity: 0.7; }
+  @media (hover: none), (pointer: coarse) { .cursor-dot, .cursor-halo { display: none; } }
+
+  /* ---- layout ---- */
+  .topbar {
+    position: relative; z-index: 10; display: flex; align-items: center; justify-content: space-between;
+    padding: 1.1rem 2rem; border-bottom: 1px solid var(--border); background: rgba(7,11,9,0.8); backdrop-filter: blur(12px);
+  }
+  .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; }
+  .brand .logo {
+    width: 30px; height: 30px; border-radius: 9px; background: var(--neon); display: flex; align-items: center; justify-content: center;
+    font-size: 0.95rem; color: #06281a; font-weight: 900; box-shadow: 0 0 18px var(--neon-soft); animation: logo-breathe 4s ease-in-out infinite;
+  }
+  @keyframes logo-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .btn {
+    position: relative; z-index: 10; border: 1px solid var(--neon); background: transparent; color: var(--neon);
+    padding: 0.55rem 1.3rem; border-radius: 10px; cursor: pointer; font-size: 0.88rem; font-weight: 700;
+    transition: all 0.25s; letter-spacing: 0.01em;
+  }
+  .btn:hover { background: var(--neon); color: #06281a; box-shadow: 0 0 24px var(--neon-soft); transform: translateY(-1px); }
+  .btn.solid { background: var(--neon); color: #06281a; border-color: var(--neon); }
+  .btn.ghost { border-color: var(--border); color: var(--muted); }
+  .btn.ghost:hover { border-color: var(--muted); background: transparent; color: var(--text); box-shadow: none; }
+
+  /* ---- auth ---- */
+  .auth-wrap { position: relative; z-index: 5; max-width: 430px; margin: 7vh auto; padding: 0 1.5rem; }
+  .auth-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2.4rem;
+    backdrop-filter: blur(16px); box-shadow: 0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px var(--neon-soft);
+    animation: card-in 0.7s cubic-bezier(0.2,0.9,0.3,1.2);
+  }
+  @keyframes card-in { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: none; } }
+  .auth-card h1 { font-size: 1.45rem; margin-bottom: 0.35rem; }
+  .auth-card .sub { color: var(--muted); font-size: 0.88rem; margin-bottom: 1.5rem; }
+  .field { margin-bottom: 1.05rem; }
+  .field label { display: block; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.32rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .field input, .field select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+    padding: 0.72rem 0.95rem; border-radius: 10px; font-size: 0.95rem; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { outline: none; border-color: var(--neon); box-shadow: 0 0 0 3px var(--neon-soft); }
+  .auth-card .btn { width: 100%; padding: 0.78rem; font-size: 1rem; margin-top: 0.5rem; }
+  .switch { text-align: center; margin-top: 1.3rem; font-size: 0.85rem; color: var(--muted); }
+  .switch a { color: var(--neon); cursor: pointer; text-decoration: none; font-weight: 600; }
+  .err { color: #f87171; font-size: 0.85rem; margin-top: 0.6rem; display: none; }
+  .business-picker { display: flex; gap: 0.7rem; margin-bottom: 1.4rem; }
+  .biz-chip {
+    flex: 1; padding: 0.8rem 0.6rem; border: 1px solid var(--border); border-radius: 12px; cursor: pointer;
+    text-align: center; font-size: 0.82rem; font-weight: 700; transition: all 0.25s; background: var(--surface2); color: var(--muted);
+  }
+  .biz-chip.active { border-color: var(--neon); color: var(--neon); background: var(--neon-soft); box-shadow: 0 0 18px var(--neon-soft); }
+
+  /* ---- dashboard ---- */
+  .dash-wrap { position: relative; z-index: 5; max-width: 1080px; margin: 0 auto; padding: 2rem; }
+  .dash-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+  .dash-head h1 { font-size: 1.7rem; letter-spacing: -0.02em; }
+  .dash-head .company { color: var(--neon); font-size: 0.95rem; margin-top: 0.2rem; }
+  .badge {
+    display: inline-block; padding: 0.32rem 0.85rem; border-radius: 999px; font-size: 0.74rem; font-weight: 700;
+    letter-spacing: 0.05em; text-transform: uppercase; border: 1px solid var(--neon); color: var(--neon); background: var(--neon-soft);
+  }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.4rem; position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .stat-card:hover { transform: translateY(-3px); border-color: var(--neon); }
+  .stat-card::after {
+    content: ""; position: absolute; inset: 0; background: radial-gradient(400px circle at var(--mx,50%) var(--my,50%), var(--neon-soft), transparent 60%);
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .stat-card:hover::after { opacity: 1; }
+  .stat-card .label { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; }
+  .stat-card .value { font-size: 2.1rem; font-weight: 900; color: var(--neon); margin-top: 0.4rem; letter-spacing: -0.02em; }
+  .stat-card .unit { font-size: 0.85rem; color: var(--muted); font-weight: 500; }
+
+  .section-title { font-size: 1.02rem; margin: 1.7rem 0 0.85rem; font-weight: 800; display: flex; align-items: center; gap: 0.55rem; }
+  .section-title::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--neon); box-shadow: 0 0 10px var(--neon); animation: logo-breathe 3s infinite; }
+
+  .auto-list { display: grid; gap: 0.8rem; }
+  .auto-card, .pack-card, .purchase-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.1rem 1.3rem;
+    display: flex; justify-content: space-between; align-items: center; gap: 1rem; transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    transform-style: preserve-3d; perspective: 800px;
+  }
+  .auto-card:hover, .pack-card:hover { transform: translateY(-2px); border-color: var(--neon); box-shadow: 0 8px 30px var(--neon-soft); }
+  .auto-card .name, .pack-card .name { font-weight: 700; }
+  .auto-card .desc, .pack-card .desc { color: var(--muted); font-size: 0.84rem; margin-top: 0.25rem; }
+  .auto-card .hours { color: var(--neon); font-weight: 800; white-space: nowrap; }
+  .st { font-size: 0.72rem; padding: 0.24rem 0.6rem; border-radius: 999px; font-weight: 700; }
+  .st.live { background: var(--neon-soft); color: var(--neon); }
+  .st.active { background: var(--neon-soft); color: var(--neon); }
+  .st.maintenance { background: rgba(255,179,71,0.14); color: #ffb347; }
+  .st.pause { background: rgba(169,180,171,0.12); color: var(--muted); }
+  .st.en_cours { background: rgba(255,154,61,0.12); color: #ff9a3d; }
+  .pack-price { font-size: 1.5rem; font-weight: 900; color: var(--neon); }
+  .pack-price small { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+  .skill-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.6rem; }
+  .skill-tag { font-size: 0.68rem; padding: 0.2rem 0.5rem; border-radius: 6px; background: var(--surface2); border: 1px solid var(--border); color: var(--muted); font-family: ui-monospace, monospace; }
+  .inv-table { width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 14px; overflow: hidden; }
+  .inv-table th, .inv-table td { padding: 0.8rem 1.1rem; text-align: left; font-size: 0.88rem; }
+  .inv-table th { background: var(--surface2); color: var(--muted); font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.06em; }
+  .inv-table tr { border-bottom: 1px solid var(--border); transition: background 0.2s; }
+  .inv-table tr:hover { background: var(--surface2); }
+  .paid { color: var(--neon); } .pending { color: #ff9a3d; }
+  .empty { color: var(--muted); font-size: 0.9rem; padding: 1.3rem; background: var(--surface); border: 1px dashed var(--border); border-radius: 14px; }
+  .footer-note { position: relative; z-index: 5; text-align: center; color: var(--muted); font-size: 0.8rem; padding: 2.5rem 0 1.8rem; }
+  .hidden { display: none !important; }
+  /* ---- V6 : graphiques ---- */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+    padding: 1.15rem 1.2rem 0.9rem; position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .chart-card:hover { transform: translateY(-2px); border-color: var(--neon); }
+  .chart-card.wide { grid-column: 1 / -1; }
+  .chart-card h3 {
+    font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em;
+    margin-bottom: 0.7rem; display: flex; align-items: center; justify-content: space-between; gap: 0.6rem;
+  }
+  .chart-box { position: relative; height: 240px; }
+  .chart-box.tall { height: 300px; }
+  .filter-pills { display: flex; gap: 0.3rem; }
+  .pill {
+    border: 1px solid var(--border); background: var(--surface2); color: var(--muted);
+    border-radius: 999px; padding: 0.24rem 0.65rem; font-size: 0.7rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .pill:hover { border-color: var(--muted); color: var(--text); }
+  .pill.active { border-color: var(--neon); color: var(--neon); background: var(--neon-soft); }
+  @media (max-width: 720px) { .charts-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 620px) {
+    .dash-wrap { padding: 1rem; }
+    .auto-card, .pack-card { flex-direction: column; align-items: flex-start; }
+    .topbar { padding: 0.9rem 1.1rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .grain, .particles, .halo, .cursor-dot, .cursor-halo { display: none !important; }
+    .particle, .halo { animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Ambiance vivante V5 -->
+<div class="grain"></div>
+<div class="particles" id="particles"></div>
+<div class="halo" style="width:500px;height:500px;top:-150px;left:-150px"></div>
+<div class="halo" style="width:400px;height:400px;bottom:-120px;right:-120px;animation-delay:2.5s"></div>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-halo" id="cursor-halo"></div>
+
+<!-- ===== AUTH ===== -->
+<div id="auth-view" class="auth-wrap">
+  <div class="auth-card">
+    <h1><span class="logo" id="auth-logo">A</span> <span id="auth-brand">Portail Client</span></h1>
+    <p class="sub" id="auth-sub">Votre espace client — suivi, automatisations, packs, factures.</p>
+
+    <form id="login-form">
+      <div class="field"><label>Email</label><input type="email" id="login-email" required placeholder="vous@entreprise.fr"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="login-pass" required placeholder="••••••••"></div>
+      <button class="btn solid" type="submit">Se connecter</button>
+      <div class="err" id="login-err"></div>
+    </form>
+
+    <div style="text-align:center;margin-top:0.9rem;font-size:0.72rem;color:var(--muted)">Accès démo local — compte fourni par votre concierge IA</div>
+
+    <form id="register-form" class="hidden">
+      <div class="field"><label>Nom complet</label><input type="text" id="reg-name" required placeholder="Prénom Nom"></div>
+      <div class="field"><label>Entreprise</label><input type="text" id="reg-company" placeholder="Votre société"></div>
+      <div class="field"><label>Email</label><input type="email" id="reg-email" required placeholder="vous@entreprise.fr"></div>
+      <div class="field"><label>Mot de passe (8 caractères min.)</label><input type="password" id="reg-pass" required placeholder="••••••••"></div>
+      <button class="btn solid" type="submit">Créer mon compte</button>
+      <div class="err" id="reg-err"></div>
+    </form>
+
+    <div class="switch" id="auth-switch">Pas encore de compte ? <a id="switch-link">Créer un accès client</a></div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div id="dash-view" class="dash-wrap hidden">
+  <div class="topbar" style="position:sticky;top:0;margin-bottom:2rem;border-radius:0 0 16px 16px">
+    <div class="brand"><div class="logo" id="dash-logo">A</div><span id="dash-brand">Portail</span></div>
+    <button class="btn ghost" id="logout-btn">Se déconnecter</button>
+  </div>
+
+  <div class="dash-head">
+    <div>
+      <h1 id="dash-name">Bonjour 👋</h1>
+      <div class="company" id="dash-company"></div>
+    </div>
+    <span class="badge" id="dash-status">actif</span>
+  </div>
+
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- V6 : graphiques des automatisations (données réelles de l'API) -->
+  <div id="charts-section" class="hidden">
+    <div class="charts-grid">
+      <div class="chart-card wide">
+        <h3><span>Heures récupérées — cumul</span>
+          <span class="filter-pills" id="filter-pills">
+            <button class="pill" data-w="1">7 j</button>
+            <button class="pill active" data-w="4">30 j</button>
+            <button class="pill" data-w="10">90 j</button>
+          </span>
+        </h3>
+        <div class="chart-box tall"><canvas id="chart-cumul"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Heures gagnées par semaine</h3>
+        <div class="chart-box"><canvas id="chart-week"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h3>Statut des automatisations</h3>
+        <div class="chart-box"><canvas id="chart-donut"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modules dynamiques selon le business -->
+  <div id="module-automations" class="hidden">
+    <div class="section-title">Vos automatisations</div>
+    <div class="auto-list" id="auto-list"></div>
+  </div>
+
+  <div id="module-packs" class="hidden">
+    <div class="section-title">Vos packs SkillVault</div>
+    <div class="auto-list" id="packs-list"></div>
+    <div class="section-title" style="margin-top:1.8rem">Mes achats</div>
+    <div class="auto-list" id="purchases-list"></div>
+  </div>
+
+  <div id="module-invoices" class="hidden">
+    <div class="section-title">Vos factures</div>
+    <div id="inv-wrap"></div>
+  </div>
+
+  <div class="footer-note" id="footer-note">Portail client — vos données, votre suivi. Réponse sous 24 h.</div>
+</div>
+
+<script src="assets/chart.umd.min.js"></script>
+<script>
+const API = "/api";
+let TOKEN = localStorage.getItem("portail_token");
+let BUSINESSES = [];
+let CURRENT_BIZ = "agentia";   // espace client Agentia (chaque business aura le sien)
+
+// ============ AMBIANCE V5 ============
+// Particules
+const pc = document.getElementById("particles");
+for (let i = 0; i < 14; i++) {
+  const p = document.createElement("div");
+  p.className = "particle";
+  const size = 2 + Math.random() * 4;
+  p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;animation-duration:${7+Math.random()*9}s;animation-delay:${Math.random()*8}s;`;
+  pc.appendChild(p);
+}
+// Curseur + traînée (lerp V5)
+const dot = document.getElementById("cursor-dot");
+const halo = document.getElementById("cursor-halo");
+let mx=-100,my=-100,hx=-100,hy=-100,tx=-100,ty=-100;
+document.addEventListener("mousemove", e => { mx=e.clientX; my=e.clientY; });
+(function loop(){
+  hx += (mx-hx)*0.16; hy += (my-hy)*0.16;
+  tx += (mx-tx)*0.09; ty += (my-ty)*0.09;
+  dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+  halo.style.transform = `translate(${hx}px,${hy}px) translate(-50%,-50%)`;
+  requestAnimationFrame(loop);
+})();
+// Spotlight : --mx/--my pour les cartes
+document.addEventListener("mousemove", e => {
+  document.documentElement.style.setProperty("--mx", e.clientX + "px");
+  document.documentElement.style.setProperty("--my", e.clientY + "px");
+});
+
+// ============ BUSINESS ============
+async function loadBusinesses() {
+  // Espace client Agentia : on charge le branding Agentia directement
+  // (le multi-business reste supporté par le backend pour les futurs espaces)
+  const r = await fetch(API + "/businesses");
+  BUSINESSES = await r.json();
+  const biz = BUSINESSES.find(b => b.slug === "agentia") || BUSINESSES[0];
+  if (biz) { CURRENT_BIZ = biz.slug; applyBrand(biz); }
+}
+function applyBrand(b) {
+  document.documentElement.style.setProperty("--neon", b.color);
+  document.documentElement.style.setProperty("--neon-soft", hexToRgba(b.color, 0.14));
+  const l1 = document.getElementById("auth-logo"), l2 = document.getElementById("dash-logo");
+  const letter = b.slug === "skillvault" ? "S" : "A";
+  l1.textContent = letter; l2.textContent = letter;
+  document.getElementById("auth-brand").textContent = "Portail " + b.name;
+  document.getElementById("dash-brand").textContent = b.name;
+  document.getElementById("footer-note").textContent = b.name + " — Portail client. Réponse sous 24 h.";
+}
+function hexToRgba(hex, a) {
+  const n = parseInt(hex.slice(1), 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`;
+}
+
+// ============ AUTH ============
+const authView = document.getElementById("auth-view");
+const dashView = document.getElementById("dash-view");
+const loginForm = document.getElementById("login-form");
+const registerForm = document.getElementById("register-form");
+const switchLink = document.getElementById("switch-link");
+let mode = "login";
+function setMode(m) {
+  mode = m;
+  loginForm.classList.toggle("hidden", m !== "login");
+  registerForm.classList.toggle("hidden", m !== "register");
+  switchLink.textContent = m === "login" ? "Créer un accès client" : "J'ai déjà un compte";
+  document.getElementById("login-err").style.display = "none";
+  document.getElementById("reg-err").style.display = "none";
+}
+switchLink.onclick = () => setMode(mode === "login" ? "register" : "login");
+
+// Connexion démo 1 clic (retirée de l'UI en V6 — les identifiants démo sont dans le README local)
+
+loginForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const body = new URLSearchParams({ username: document.getElementById("login-email").value, password: document.getElementById("login-pass").value });
+  try {
+    const r = await fetch(API + "/auth/login", { method: "POST", headers: {"Content-Type": "application/x-www-form-urlencoded"}, body });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    TOKEN = d.access_token; localStorage.setItem("portail_token", TOKEN);
+    showDashboard();
+  } catch (err) { const el = document.getElementById("login-err"); el.textContent = err.message; el.style.display = "block"; }
+});
+
+registerForm.addEventListener("submit", async e => {
+  e.preventDefault();
+  const body = {
+    email: document.getElementById("reg-email").value,
+    password: document.getElementById("reg-pass").value,
+    full_name: document.getElementById("reg-name").value,
+    company: document.getElementById("reg-company").value,
+    business: CURRENT_BIZ,
+  };
+  try {
+    const r = await fetch(API + "/auth/register", { method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body) });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    TOKEN = d.access_token; localStorage.setItem("portail_token", TOKEN);
+    showDashboard();
+  } catch (err) { const el = document.getElementById("reg-err"); el.textContent = err.message; el.style.display = "block"; }
+});
+
+document.getElementById("logout-btn").onclick = () => {
+  TOKEN = null; localStorage.removeItem("portail_token");
+  dashView.classList.add("hidden"); authView.classList.remove("hidden"); setMode("login");
+};
+
+// ============ DASHBOARD ============
+const STATUT_LABEL = { demande: "Demande", en_cours: "En cours", actif: "Actif", abonne: "Abonné", mise_en_place: "Mise en place", audit_demande: "Audit demandé", audit_fait: "Audit réalisé" };
+
+async function showDashboard() {
+  authView.classList.add("hidden"); dashView.classList.remove("hidden");
+  try {
+    const r = await fetch(API + "/dashboard", { headers: { "Authorization": "Bearer " + TOKEN } });
+    const d = await r.json();
+    if (!r.ok) {
+      // token invalide ou expiré → retour propre à la connexion
+      TOKEN = null; localStorage.removeItem("portail_token");
+      dashView.classList.add("hidden"); authView.classList.remove("hidden"); setMode("login");
+      return;
+    }
+
+    applyBrand({ slug: d.business.slug, name: d.business.name, color: d.business.color });
+    document.getElementById("dash-name").textContent = "Bonjour " + d.user.full_name.split(" ")[0] + " 👋";
+    document.getElementById("dash-company").textContent = d.user.company || "Client " + d.business.name;
+    const st = document.getElementById("dash-status");
+    st.textContent = STATUT_LABEL[d.profil.statut] || d.profil.statut;
+
+    // Stats (V6 : KPI animés pour le module automations)
+    const statsGrid = document.getElementById("stats-grid");
+    statsGrid.innerHTML = "";
+    const hasAuto = d.business.modules.includes("automations");
+    const hasPacks = d.business.modules.includes("packs");
+    document.getElementById("charts-section").classList.toggle("hidden", !hasAuto);
+    if (hasAuto && d.charts && d.charts.hours_by_week) {
+      renderKpis(d);
+    } else if (hasPacks) {
+      statsGrid.insertAdjacentHTML("beforeend",
+        `<div class="stat-card"><div class="label">Packs achetés</div><div class="value">${d.stats.packs_achetes}</div></div>` +
+        `<div class="stat-card"><div class="label">Total investi</div><div class="value">${d.stats.total_investi}<span class="unit"> €</span></div></div>`);
+    } else {
+      statsGrid.insertAdjacentHTML("beforeend",
+        `<div class="stat-card"><div class="label">Temps récupéré</div><div class="value">${d.stats.total_heures_recuperees}<span class="unit"> h</span></div></div>` +
+        `<div class="stat-card"><div class="label">Automatisations live</div><div class="value">${d.stats.automations_live}</div></div>` +
+        `<div class="stat-card"><div class="label">Total investi</div><div class="value">${d.stats.total_investi}<span class="unit"> €</span></div></div>`);
+    }
+
+    // Modules
+    document.getElementById("module-automations").classList.toggle("hidden", !hasAuto);
+    document.getElementById("module-packs").classList.toggle("hidden", !hasPacks);
+    document.getElementById("module-invoices").classList.toggle("hidden", !d.business.modules.includes("invoices"));
+
+    if (hasAuto) renderAutomations(d);
+    if (hasAuto) drawCharts();
+    if (hasPacks) renderPacks(d);
+    renderInvoices(d);
+  } catch (err) {
+    // API injoignable (backend pas démarré, CORS, etc.) → message clair
+    TOKEN = null; localStorage.removeItem("portail_token");
+    dashView.classList.add("hidden"); authView.classList.remove("hidden"); setMode("login");
+    const el = document.getElementById("login-err");
+    el.textContent = "Impossible de joindre l'API (" + err.message + "). Vérifie que le backend tourne (port 8000).";
+    el.style.display = "block";
+  }
+}
+
+// ============ V6 : KPI + GRAPHIQUES (Chart.js — données réelles de l'API) ============
+let DASH = null;            // dernier payload dashboard
+let PERIOD = 4;             // semaines affichées (7j=1, 30j=4, 90j=10)
+let chartCumul = null, chartWeek = null, chartDonut = null;
+
+function renderKpis(d) {
+  DASH = d;
+  const ch = d.charts;
+  const statsGrid = document.getElementById("stats-grid");
+  statsGrid.innerHTML = "";
+  const kpis = [
+    { label: "€ économisés / mois", value: ch.euros_saved_month, unit: " €", decimals: 0 },
+    { label: "Retour sur investissement", value: ch.roi, unit: " ×", decimals: 1 },
+    { label: "Heures récupérées", value: ch.hours_total, unit: " h", decimals: 0 },
+    { label: "Temps mensuel gagné", value: ch.pct_temps_gagne, unit: " %", decimals: 1 },
+  ];
+  kpis.forEach(k => {
+    const el = document.createElement("div");
+    el.className = "stat-card";
+    el.innerHTML = `<div class="label">${k.label}</div><div class="value"><span class="kpi-val">0</span><span class="unit">${k.unit}</span></div>`;
+    statsGrid.appendChild(el);
+    animateValue(el.querySelector(".kpi-val"), k.value, k.decimals);
+  });
+}
+
+function animateValue(el, target, decimals) {
+  const dur = 900, t0 = performance.now();
+  function finish() { el.textContent = decimals > 0 ? target.toFixed(decimals) : Math.round(target).toLocaleString("fr-FR"); }
+  function step(now) {
+    const p = Math.min((now - t0) / dur, 1);
+    const eased = 1 - Math.pow(1 - p, 3);
+    const val = target * eased;
+    el.textContent = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toLocaleString("fr-FR");
+    if (p < 1) requestAnimationFrame(step); else finish();
+  }
+  requestAnimationFrame(step);
+  setTimeout(finish, dur + 200);  // filet de sécurité : rAF peut être throttlé en onglet inactif
+}
+
+function weeksSlice(n) {
+  const hbw = DASH.charts.hours_by_week.slice(-n);
+  const hc = DASH.charts.hours_cumulative.slice(-n);
+  return { labels: hbw.map(w => w.label), hours: hbw.map(w => w.heures), cumul: hc };
+}
+
+function destroyCharts() {
+  [chartCumul, chartWeek, chartDonut].forEach(c => { if (c) { c.destroy(); } });
+  chartCumul = chartWeek = chartDonut = null;
+}
+
+function drawCharts() {
+  if (typeof Chart === "undefined") return;  // Chart.js non chargé (offline ?)
+  const NEON = getComputedStyle(document.documentElement).getPropertyValue("--neon").trim() || "#00ff88";
+  const MUTED = "#9aa8a0", TEXT = "#e8f5ee", GRID = "rgba(255,255,255,0.05)";
+  Chart.defaults.color = MUTED;
+  Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+  Chart.defaults.borderColor = "rgba(255,255,255,0.06)";
+  const tip = {
+    backgroundColor: "#0d1512", borderColor: NEON, borderWidth: 1,
+    titleColor: TEXT, bodyColor: TEXT, padding: 10, cornerRadius: 8,
+  };
+
+  destroyCharts();
+  const { labels, hours, cumul } = weeksSlice(PERIOD);
+
+  // 1) Aire — heures cumulées (la courbe qui monte)
+  const ctx1 = document.getElementById("chart-cumul").getContext("2d");
+  const grad = ctx1.createLinearGradient(0, 0, 0, 300);
+  grad.addColorStop(0, hexToRgba(NEON, 0.32));
+  grad.addColorStop(1, hexToRgba(NEON, 0.01));
+  chartCumul = new Chart(ctx1, {
+    type: "line",
+    data: { labels, datasets: [{
+      label: "Heures cumulées", data: cumul,
+      borderColor: NEON, backgroundColor: grad, fill: true, tension: 0.35, borderWidth: 2.5,
+      pointRadius: 3.5, pointBackgroundColor: NEON, pointBorderColor: "#06281a", pointBorderWidth: 1.5,
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: tip },
+      scales: {
+        x: { grid: { color: GRID }, ticks: { color: MUTED } },
+        y: { beginAtZero: true, grid: { color: GRID }, ticks: { color: MUTED } },
+      },
+    },
+  });
+
+  // 2) Barres — heures par semaine
+  chartWeek = new Chart(document.getElementById("chart-week"), {
+    type: "bar",
+    data: { labels, datasets: [{
+      label: "Heures/semaine", data: hours,
+      backgroundColor: hexToRgba(NEON, 0.55), hoverBackgroundColor: NEON,
+      borderRadius: 6, borderSkipped: false, maxBarThickness: 34,
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: tip },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: MUTED } },
+        y: { beginAtZero: true, grid: { color: GRID }, ticks: { color: MUTED } },
+      },
+    },
+  });
+
+  // 3) Donut — statuts des automatisations
+  const counts = DASH.charts.automation_status_counts || { active: 0, maintenance: 0, pause: 0 };
+  const donutLabels = ["Actives", "Maintenance", "Pause"];
+  const donutColors = [NEON, "#ffb347", "#64748b"];
+  const donutData = [counts.active || 0, counts.maintenance || 0, counts.pause || 0];
+  chartDonut = new Chart(document.getElementById("chart-donut"), {
+    type: "doughnut",
+    data: { labels: donutLabels, datasets: [{
+      data: donutData, backgroundColor: donutColors,
+      borderColor: "#0d1512", borderWidth: 3, hoverOffset: 7,
+    }]},
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: "62%",
+      plugins: {
+        legend: { position: "bottom", labels: { color: MUTED, padding: 14, usePointStyle: true, pointStyle: "circle" } },
+        tooltip: tip,
+      },
+    },
+  });
+}
+
+// Filtre de période (7 j / 30 j / 90 j) — recoupe les semaines déjà chargées depuis l'API
+document.querySelectorAll("#filter-pills .pill").forEach(p => {
+  p.addEventListener("click", () => {
+    document.querySelectorAll("#filter-pills .pill").forEach(x => x.classList.remove("active"));
+    p.classList.add("active");
+    PERIOD = parseInt(p.dataset.w, 10);
+    drawCharts();
+  });
+});
+
+function renderAutomations(d) {
+  const list = document.getElementById("auto-list");
+  list.innerHTML = "";
+  if (d.automations.length === 0) {
+    list.innerHTML = '<div class="empty">Aucune automatisation pour le moment. Votre demande est en cours de traitement.</div>';
+  } else {
+    d.automations.forEach(a => {
+      const stLabel = { active: "Active", maintenance: "Maintenance", pause: "En pause", en_cours: "En cours", en_attente: "En attente" }[a.statut] || a.statut;
+      list.insertAdjacentHTML("beforeend",
+        `<div class="auto-card"><div><div class="name">${a.titre}</div><div class="desc">${a.description||""}</div></div>
+         <div style="display:flex;align-items:center;gap:0.8rem"><span class="st ${a.statut}">${stLabel}</span><span class="hours">+${a.heures_gagnees}h/sem</span></div></div>`);
+    });
+  }
+}
+
+function renderPacks(d) {
+  const list = document.getElementById("packs-list");
+  list.innerHTML = "";
+  d.packs.forEach(p => {
+    let skills = [];
+    try { skills = JSON.parse(p.skills); } catch(e) {}
+    list.insertAdjacentHTML("beforeend",
+      `<div class="pack-card"><div><div class="name">${p.name}</div><div class="desc">${p.description||""}</div>
+        <div class="skill-tags">${skills.slice(0,6).map(s=>`<span class="skill-tag">${s}</span>`).join("")}${skills.length>6?`<span class="skill-tag">+${skills.length-6}</span>`:""}</div></div>
+       <div style="text-align:right"><div class="pack-price">${p.price}<small> €</small></div>
+       <button class="btn" style="margin-top:0.5rem;font-size:0.78rem;padding:0.4rem 0.9rem" onclick="buyPack(${p.id})">Ajouter</button></div></div>`);
+  });
+  const buys = document.getElementById("purchases-list");
+  buys.innerHTML = "";
+  if (d.purchases.length === 0) {
+    buys.innerHTML = '<div class="empty">Aucun achat pour le moment. Choisissez un pack ci-dessus.</div>';
+  } else {
+    d.purchases.forEach(p => {
+      let skills = []; try { skills = JSON.parse(p.skills); } catch(e) {}
+      buys.insertAdjacentHTML("beforeend",
+        `<div class="purchase-card"><div><div class="name">${p.pack_name}</div>
+          <div class="skill-tags" style="margin-top:0.4rem">${skills.slice(0,5).map(s=>`<span class="skill-tag">${s}</span>`).join("")}${skills.length>5?`<span class="skill-tag">+${skills.length-5}</span>`:""}</div></div>
+         <div style="text-align:right"><div class="pack-price">${p.montant}<small> €</small></div><div style="font-size:0.75rem;color:var(--muted)">${p.date}</div></div></div>`);
+    });
+  }
+}
+
+async function buyPack(packId) {
+  try {
+    const r = await fetch(API + "/packs/" + packId + "/buy", { method: "POST", headers: { "Authorization": "Bearer " + TOKEN } });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.detail || "Erreur");
+    showDashboard();
+  } catch (err) { alert(err.message); }
+}
+
+function renderInvoices(d) {
+  const wrap = document.getElementById("inv-wrap");
+  wrap.innerHTML = "";
+  if (d.invoices.length === 0) {
+    wrap.innerHTML = '<div class="empty">Aucune facture pour le moment.</div>';
+  } else {
+    let html = '<table class="inv-table"><thead><tr><th>N°</th><th>Date</th><th>Montant</th><th>Statut</th></tr></thead><tbody>';
+    d.invoices.forEach(i => {
+      html += `<tr><td>${i.numero}</td><td>${i.date}</td><td>${i.montant} €</td><td class="${i.statut==="payee"?"paid":"pending"}">${i.statut==="payee"?"Payée":"En attente"}</td></tr>`;
+    });
+    html += '</tbody></table>';
+    wrap.innerHTML = html;
+  }
+}
+
+// ============ INIT ============
+loadBusinesses();
+if (TOKEN) showDashboard(); else setMode("login");
+</script>
+</body>
+</html>
