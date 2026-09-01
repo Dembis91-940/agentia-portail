@@ -898,7 +898,7 @@ function renderAutomations(d) {
     d.automations.forEach(a => {
       const stLabel = { active: "Active", maintenance: "Maintenance", pause: "En pause", en_cours: "En cours", en_attente: "En attente" }[a.statut] || a.statut;
       list.insertAdjacentHTML("beforeend",
-        `<div class="auto-card"><div><div class="name">${a.titre}</div><div class="desc">${a.description||""}</div></div>
+        `<div class="auto-card"><div><div class="name">${escapeHtml(a.titre)}</div><div class="desc">${escapeHtml(a.description||"")}</div></div>
          <div style="display:flex;align-items:center;gap:0.8rem"><span class="st ${a.statut}">${stLabel}</span><span class="hours">+${a.heures_gagnees}h/sem</span></div></div>`);
     });
   }
@@ -911,8 +911,8 @@ function renderPacks(d) {
     let skills = [];
     try { skills = JSON.parse(p.skills); } catch(e) {}
     list.insertAdjacentHTML("beforeend",
-      `<div class="pack-card"><div><div class="name">${p.name}</div><div class="desc">${p.description||""}</div>
-        <div class="skill-tags">${skills.slice(0,6).map(s=>`<span class="skill-tag">${s}</span>`).join("")}${skills.length>6?`<span class="skill-tag">+${skills.length-6}</span>`:""}</div></div>
+      `<div class="pack-card"><div><div class="name">${escapeHtml(p.name)}</div><div class="desc">${escapeHtml(p.description||"")}</div>
+        <div class="skill-tags">${skills.slice(0,6).map(s=>`<span class="skill-tag">${escapeHtml(s)}</span>`).join("")}${skills.length>6?`<span class="skill-tag">+${skills.length-6}</span>`:""}</div></div>
        <div style="text-align:right"><div class="pack-price">${p.price}<small> €</small></div>
        <button class="btn" style="margin-top:0.5rem;font-size:0.78rem;padding:0.4rem 0.9rem" onclick="buyPack(${p.id})">Ajouter</button></div></div>`);
   });
@@ -924,8 +924,8 @@ function renderPacks(d) {
     d.purchases.forEach(p => {
       let skills = []; try { skills = JSON.parse(p.skills); } catch(e) {}
       buys.insertAdjacentHTML("beforeend",
-        `<div class="purchase-card"><div><div class="name">${p.pack_name}</div>
-          <div class="skill-tags" style="margin-top:0.4rem">${skills.slice(0,5).map(s=>`<span class="skill-tag">${s}</span>`).join("")}${skills.length>5?`<span class="skill-tag">+${skills.length-5}</span>`:""}</div></div>
+        `<div class="purchase-card"><div><div class="name">${escapeHtml(p.pack_name)}</div>
+          <div class="skill-tags" style="margin-top:0.4rem">${skills.slice(0,5).map(s=>`<span class="skill-tag">${escapeHtml(s)}</span>`).join("")}${skills.length>5?`<span class="skill-tag">+${skills.length-5}</span>`:""}</div></div>
          <div style="text-align:right"><div class="pack-price">${p.montant}<small> €</small></div><div style="font-size:0.75rem;color:var(--muted)">${p.date}</div></div></div>`);
     });
   }
@@ -999,7 +999,7 @@ function renderAuditList(audits) {
     list.insertAdjacentHTML("beforeend",
       `<div class="audit-card">
         <div class="a-left">
-          <div class="a-name">${a.site_name} <span class="st ${a.score_global >= 65 ? "active" : "en_cours"}">${a.formule || "Pro"}</span></div>
+          <div class="a-name">${escapeHtml(a.site_name)} <span class="st ${a.score_global >= 65 ? "active" : "en_cours"}">${escapeHtml(a.formule || "Pro")}</span></div>
           <div class="a-date">${a.date} · Moyenne des axes : ${moy}/100</div>
           ${planTags.length ? `<div class="plan-tags">${planTags.map(t => `<span class="plan-tag">${t}</span>`).join("")}</div>` : ""}
         </div>
@@ -1183,7 +1183,7 @@ function renderAvisReviews(reviews) {
     list.insertAdjacentHTML("beforeend",
       `<div class="review-card">
         <div class="rv-left">
-          <div class="rv-meta">${starsHtml(rv.note)} <span class="rv-loc">${loc || "—"}</span>
+          <div class="rv-meta">${starsHtml(rv.note)} <span class="rv-loc">${escapeHtml(loc || "—")}</span>
             <span class="badge ${repondu ? "ok" : "wait"}">${repondu ? "Répondu" : "En attente"}</span></div>
           <div class="rv-text">${escapeHtml(rv.text || "")}</div>
           ${repondu ? `<div class="rv-reply"><b>Votre réponse :</b> ${escapeHtml(rv.reponse || "")}</div>` : ""}

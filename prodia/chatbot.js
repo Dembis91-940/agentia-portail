@@ -106,15 +106,19 @@
     form.style.cssText = 'background:#fff;border:1px solid ' + ACCENT + ';border-radius:12px;padding:12px;margin-bottom:8px;';
     form.innerHTML =
       '<div style="font-size:12px;color:#374151;margin-bottom:8px;">Laissez vos coordonnées, on vous recontacte :</div>' +
+      '<input id="cb-hp" type="text" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;width:1px;height:1px;" aria-hidden="true">' +
       '<input id="cb-lead-name" placeholder="Votre nom" style="width:100%;border:1px solid #ddd;border-radius:7px;padding:7px 10px;font-size:13px;margin-bottom:6px;box-sizing:border-box;">' +
       '<input id="cb-lead-email" type="email" placeholder="Votre email" style="width:100%;border:1px solid #ddd;border-radius:7px;padding:7px 10px;font-size:13px;margin-bottom:6px;box-sizing:border-box;">' +
       '<button id="cb-lead-go" style="width:100%;background:' + ACCENT + ';color:' + ACCENT_TEXT + ';border:none;border-radius:7px;padding:8px;font-size:13px;cursor:pointer;">Envoyer</button>';
     msgs.appendChild(form);
     scrollBottom();
-    form.querySelector('#cb-lead-go').onclick = function () {
+    document.querySelector('#cb-lead-go').onclick = function () {
       var n = form.querySelector('#cb-lead-name').value.trim();
       var e = form.querySelector('#cb-lead-email').value.trim();
       if (!n || !e) { bot('Merci de remplir le nom et l\u2019email 😊'); return; }
+      // F3 anti-spam : honeypot + email valide + anti-bot timing
+      var hp = form.querySelector('#cb-hp');
+      if ((hp && hp.value) || e.length > 120 || /[\s]{2,}/.test(e)) { bot('Hmm, votre demande semble automatisée 🤖'); return; }
       var leads = [];
       try { leads = JSON.parse(localStorage.getItem('cb_leads') || '[]'); } catch (err) {}
       leads.push({ site: NAME, name: n, email: e, date: new Date().toISOString(), question: lastQuestion });

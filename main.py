@@ -47,7 +47,7 @@ def _resolve_secret_key() -> str:
 
 SECRET_KEY = _resolve_secret_key()
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 12
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 2  # F4 : 2 h au lieu de 12
 
 # CORS restreint : domaine réel du portail, configurable via env (liste séparée par virgules)
 ALLOWED_ORIGINS = [
@@ -61,6 +61,22 @@ ALLOWED_ORIGINS = [
 RATE_LIMIT_MAX = 5
 RATE_LIMIT_WINDOW_SECONDS = 15 * 60
 LOGIN_FAILURES = defaultdict(deque)  # key "ip|email" -> deque[timestamps]
+REGISTER_FAILURES = defaultdict(deque)  # F5/F6 : rate-limit /register (anti spam comptes)
+
+def _bump_rate_limit(kind: str, request) -> None:
+    """F5/F6 : compteur partagé par IP (login + register) — 429 au-delà de RATE_LIMIT_MAX."""
+    store = REGISTER_FAILURES if kind == "register" else LOGIN_FAILURES
+    client_ip = request.client.host if request and request.client else "unknown"
+    key = f"{client_ip}|{kind}"
+    now = time.time()
+    q = store[key]
+    while q and now - q[0] > RATE_LIMIT_WINDOW_SECONDS:
+        q.popleft()
+    if len(q) >= RATE_LIMIT_MAX:
+        wait_min = int(RATE_LIMIT_WINDOW_SECONDS - (now - q[0])) // 60 + 1
+        raise HTTPException(429, f"Trop de tentatives — réessayez dans ~{wait_min} min")
+    q.append(now)
+    store[key] = q
 
 # Taux horaire par défaut pour le calcul des € économisés (configurable par business)
 DEFAULT_TAUX_HORAIRE = 35.0
@@ -260,7 +276,7 @@ _migrate()
 # Seed de démo (idempotent — ne se relance pas si les événements existent déjà)
 # ---------------------------------------------------------------------------
 DEMO_EMAIL = "client@boulangerie-martin.fr"
-DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD", "client1234")
+DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD")  # AUCUN fallback — seed démo désactivé sans mot de passe explicite (F1)
 DEMO_FULL_NAME = "Martin Dupont"
 DEMO_COMPANY = "Boulangerie Martin"
 DEMO_MONTANT_MENSUEL = 650.0
@@ -346,7 +362,7 @@ def _seed_demo(db: Session):
 
 PRODIA_COLOR = "#d4a017"
 PRODIA_DEMO_EMAIL = "sophie@atelier-dupont.fr"
-PRODIA_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD", "client1234")
+PRODIA_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD")  # AUCUN fallback — seed démo désactivé sans mot de passe explicite (F1)
 PRODIA_DEMO_FULL_NAME = "Sophie Dupont"
 PRODIA_DEMO_COMPANY = "Atelier Dupont"
 
@@ -396,7 +412,7 @@ def _seed_prodia(db: Session):
 
 AVISBOOST_COLOR = "#22d3ee"
 AVISBOOST_DEMO_EMAIL = "claire@salon-lumiere.fr"
-AVISBOOST_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD", "client1234")
+AVISBOOST_DEMO_PASSWORD = os.environ.get("PORTAIL_DEMO_PASSWORD")  # AUCUN fallback — seed démo désactivé sans mot de passe explicite (F1)
 AVISBOOST_DEMO_FULL_NAME = "Claire Martin"
 AVISBOOST_DEMO_COMPANY = "Salon Lumière"
 
@@ -671,6 +687,12 @@ async def security_headers(request: Request, call_next):
     resp.headers.setdefault("X-Content-Type-Options", "nosniff")
     resp.headers.setdefault("X-Frame-Options", "DENY")
     resp.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    # F9 : CSP stricte + Permissions-Policy (sources explicites : self + EmailJS CDN)
+    resp.headers.setdefault("Content-Security-Policy",
+        "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net https://cdn.emailjs.com; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.emailjs.com;")
+    resp.headers.setdefault("Permissions-Policy", "geolocation=(), microphone=(), camera=()")
     return resp
 
 # Sert le frontend du portail depuis le même serveur (une seule URL, zéro CORS)
@@ -710,7 +732,9 @@ def list_businesses(db: Session = Depends(get_db)):
              "taux_horaire": b.taux_horaire or DEFAULT_TAUX_HORAIRE} for b in db.query(Business).all()]
 
 @app.post("/api/auth/register", response_model=TokenOut, status_code=201)
-def register(data: RegisterIn, db: Session = Depends(get_db)):
+def register(data: RegisterIn, request: Request, db: Session = Depends(get_db)):
+    # F5/F6 : rate-limit sur /register (anti spam de comptes)
+    _bump_rate_limit("register", request)
     if len(data.password) < 8:
         raise HTTPException(400, "Le mot de passe doit faire au moins 8 caractères")
     business = db.query(Business).filter(Business.slug == data.business).first()
@@ -868,6 +892,9 @@ def dashboard(user: User = Depends(get_current_user), db: Session = Depends(get_
 
 @app.post("/api/packs/{pack_id}/buy")
 def buy_pack(pack_id: int, user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # F8 : aucun achat marqué "payee" sans paiement réel (Stripe webhook requis)
+    if os.environ.get("PAYMENTS_ENABLED") != "true":
+        raise HTTPException(503, "Paiement en ligne pas encore activé — contactez Agentia pour souscrire")
     pack = db.query(Pack).filter(Pack.id == pack_id, Pack.business_id == user.business_id).first()
     if not pack:
         raise HTTPException(404, "Pack introuvable")
@@ -1106,6 +1133,11 @@ def create_visit(data: VisitIn, user: User = Depends(get_current_user),
     visit = Visit(user_id=user.id, location_id=data.location_id,
                   client_name=data.client_name.strip(), phone=data.phone.strip(),
                   visit_date=vdate, canal=(data.canal or "google").strip() or "google")
+    # F7 : vérifier l'appartenance de la location (même contrôle que delete_location)
+    if data.location_id:
+        loc = db.query(Location).filter(Location.id == data.location_id, Location.user_id == user.id).first()
+        if not loc:
+            raise HTTPException(404, "Emplacement introuvable")
     db.add(visit)
     db.commit()
     db.refresh(visit)
